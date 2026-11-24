@@ -3,10 +3,12 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { 
   ArrowRight, Heart, BookOpen, Palette, Music, Star, MapPin, 
   Phone, Mail, Instagram, Clock, GraduationCap, Users, Sparkles, Building2,
-  Calendar, Camera, Images, X, ChevronLeft, ChevronRight, ZoomIn, Home, ArrowLeft
+  Calendar, Camera, Images, X, ChevronLeft, ChevronRight, ZoomIn, Home, ArrowLeft,
+  MessageCircle, ShieldCheck, Droplets, HeartHandshake, Smile, CheckCircle2, Send, Award, Check
 } from 'lucide-react';
 
 const PHONE = '918750994677';
+const EMAIL = 'mvscholars7@gmail.com';
 const MAPS_URL = 'https://maps.app.goo.gl/fUpGj39ZQUtdzi2a7?g_st=aw';
 const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M. V. Scholars School! I would like to enquire about admissions.')}`;
 
@@ -18,6 +20,66 @@ const activities = [
 
 const foundationalClasses = ['Pre-Nursery', 'Nursery', 'LKG', 'UKG'];
 const primaryClasses = ['Class 1st', 'Class 2nd', 'Class 3rd', 'Class 4th', 'Class 5th'];
+
+const facilities = [
+  {
+    icon: ShieldCheck,
+    title: 'Safe & CCTV Secured Campus',
+    desc: 'Complete 24/7 CCTV surveillance across all classrooms, play areas, and campus entrance gates for total child safety.',
+    bgImage: '/images/facilities/cctv.jpg'
+  },
+  {
+    icon: Sparkles,
+    title: 'Smart Activity Classrooms',
+    desc: 'Vibrant child-safe furniture, interactive visual charts, puzzles, and engaging audiovisual storytelling sessions.',
+    bgImage: '/images/facilities/classroom.jpg'
+  },
+  {
+    icon: Droplets,
+    title: 'Clean RO Water & Sanitized Hygiene',
+    desc: 'Multi-stage RO drinking water filtration and hygienic, sanitized child-height washroom facilities maintained round-the-clock.',
+    bgImage: '/images/facilities/water.jpg'
+  },
+  {
+    icon: Smile,
+    title: 'Joyful Play & Activity Zone',
+    desc: 'Safe, dedicated indoor and outdoor activity areas with educational toys, building blocks, and motor-skill games.',
+    bgImage: '/images/facilities/play.jpg'
+  },
+  {
+    icon: HeartHandshake,
+    title: 'First Aid & Health Readiness',
+    desc: 'Fully stocked medical first-aid readiness, trained teachers, and prompt care for any little bump or scrape.',
+    bgImage: '/images/facilities/first-aid.jpg'
+  },
+  {
+    icon: Award,
+    title: 'Moral Sanskars, Yoga & Festivals',
+    desc: 'Balancing academic fundamentals with daily morning yoga, respectful manners, cultural celebrations, and patriotic values.',
+    bgImage: '/images/facilities/yoga.jpg'
+  }
+];
+
+const testimonials = [
+  {
+    name: 'Pooja Sharma',
+    child: 'Mother of Aarav (UKG)',
+    avatar: 'P',
+    text: 'M. V. Scholars School has given my child the best start. The teachers give individual attention to every student, and the balance of academics, moral values, and festive activities is heartwarming.'
+  },
+  {
+    name: 'Rajesh Kumar',
+    child: 'Father of Ananya (Class 2nd)',
+    avatar: 'R',
+    text: 'Finding a school with such caring teachers and safe environment in Tikri Kalan was a blessing. Ananya loves going to school every single morning and has improved so much in reading and math.'
+  },
+  {
+    name: 'Sunita Yadav',
+    child: 'Mother of Kabir (Nursery)',
+    avatar: 'S',
+    text: 'Very hygienic, CCTV-monitored, and child-friendly campus. Kabir was shy at first, but within two months he started reciting poems with so much confidence. Highly recommended!'
+  }
+];
 
 const eventAlbums = [
   {
@@ -288,12 +350,172 @@ function EventCoverImage({ folder, coverIndex = 1, fallback, alt }) {
   );
 }
 
+// Brand logo with seamless support for logo.jpeg, logo.png, logo.jpg
+function BrandLogo() {
+  const [srcIndex, setSrcIndex] = useState(0);
+  const sources = [
+    '/images/logo/logo.jpeg',
+    '/images/logo/logo.png',
+    '/images/logo/logo.jpg'
+  ];
+
+  if (srcIndex >= sources.length) {
+    return <span className="brand-mark">MV<span>✦</span></span>;
+  }
+
+  return (
+    <img
+      src={sources[srcIndex]}
+      alt="M. V. Scholars School Logo"
+      className="brand-logo-img"
+      onError={() => setSrcIndex((prev) => prev + 1)}
+    />
+  );
+}
+
+// Reusable horizontal side-moving carousel matching Kidzee mobile slider with dots & swipe
+function SideMovingCarousel({ items, renderItem, id, desktopCols = 3, ariaLabel }) {
+  const trackRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = () => {
+    const el = trackRef.current;
+    if (!el || !el.children || el.children.length === 0) return;
+    const scrollLeft = el.scrollLeft;
+    const slide = el.children[0];
+    const slideWidth = slide ? slide.offsetWidth : 280;
+    const gap = 16;
+    const newIndex = Math.round(scrollLeft / (slideWidth + gap));
+    setActiveIndex(Math.max(0, Math.min(newIndex, items.length - 1)));
+  };
+
+  const scrollToIndex = (index) => {
+    const el = trackRef.current;
+    if (!el || !el.children || !el.children[index]) return;
+    el.children[index].scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest'
+    });
+    setActiveIndex(index);
+  };
+
+  const handlePrev = () => {
+    scrollToIndex(Math.max(0, activeIndex - 1));
+  };
+
+  const handleNext = () => {
+    scrollToIndex(Math.min(items.length - 1, activeIndex + 1));
+  };
+
+  return (
+    <div className="side-carousel-wrapper" id={id}>
+      <div 
+        className={`side-carousel-track desktop-cols-${desktopCols}`} 
+        ref={trackRef}
+        onScroll={handleScroll}
+        role="region"
+        aria-label={ariaLabel}
+      >
+        {items.map((item, idx) => (
+          <div className="side-carousel-slide" key={item.id || item.title || idx}>
+            {renderItem(item, idx)}
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination controls with arrows and dots matching Kidzee design */}
+      <div className="side-carousel-controls">
+        <button
+          type="button"
+          className="side-carousel-arrow prev"
+          onClick={handlePrev}
+          disabled={activeIndex === 0}
+          aria-label="Previous slide"
+        >
+          ‹
+        </button>
+
+        <div className="side-carousel-dots">
+          {items.map((_, idx) => (
+            <button
+              type="button"
+              key={idx}
+              className={`side-carousel-dot ${idx === activeIndex ? 'active' : ''}`}
+              onClick={() => scrollToIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="side-carousel-arrow next"
+          onClick={handleNext}
+          disabled={activeIndex === items.length - 1}
+          aria-label="Next slide"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [currentHash, setCurrentHash] = useState(window.location.hash || '#home');
   const [activeNav, setActiveNav] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [aboutZoomed, setAboutZoomed] = useState(false);
-  const [logoFailed, setLogoFailed] = useState(false);
+  const [enquiryForm, setEnquiryForm] = useState({
+    parentName: '',
+    phone: '',
+    childName: '',
+    childAge: '',
+    selectedClass: 'Pre-Nursery',
+    message: ''
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const handleWhatsAppSubmit = (e) => {
+    e.preventDefault();
+    if (!enquiryForm.parentName.trim() || !enquiryForm.phone.trim()) {
+      alert('Please fill in your name and phone number so our admissions team can reach you.');
+      return;
+    }
+    const text = `*New Admission Enquiry - M.V. Scholars School*
+👤 *Parent Name:* ${enquiryForm.parentName}
+📱 *Phone:* ${enquiryForm.phone}
+🧒 *Child Name:* ${enquiryForm.childName || 'Not specified'} (${enquiryForm.childAge ? `${enquiryForm.childAge} yrs` : 'Age not specified'})
+🎒 *Class Interested:* ${enquiryForm.selectedClass}
+💬 *Message:* ${enquiryForm.message || 'I would like more information about admissions and fee structure.'}`;
+
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`, '_blank');
+    setFormSubmitted(true);
+  };
+
+  const handleEmailSubmit = (e) => {
+    e.preventDefault();
+    if (!enquiryForm.parentName.trim() || !enquiryForm.phone.trim()) {
+      alert('Please fill in your name and phone number so our admissions team can reach you.');
+      return;
+    }
+    const subject = `Admission Enquiry - ${enquiryForm.parentName} (${enquiryForm.selectedClass})`;
+    const body = `Hello M. V. Scholars School Admissions Desk,
+
+I would like to enquire about admission:
+- Parent Name: ${enquiryForm.parentName}
+- Phone Number: ${enquiryForm.phone}
+- Child Name: ${enquiryForm.childName || 'N/A'} (Age: ${enquiryForm.childAge || 'N/A'})
+- Class Interested In: ${enquiryForm.selectedClass}
+- Message / Notes: ${enquiryForm.message || 'Please share admission procedure and visit timings.'}
+
+Thank you!`;
+
+    window.open(`mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    setFormSubmitted(true);
+  };
 
   useEffect(() => {
     const handleHash = () => {
@@ -331,6 +553,7 @@ function App() {
 
   const handleNavClick = (navKey, hash) => {
     setActiveNav(navKey);
+    setMobileMenuOpen(false);
     if (hash === '#gallery' || hash === '#about' || hash === '#home') {
       window.location.hash = hash;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -366,22 +589,18 @@ function App() {
     <>
       <header className="header">
         <a className="brand" href="#home" onClick={() => handleNavClick('home', '#home')}>
-          {!logoFailed ? (
-            <img 
-              src="/images/logo/logo.png" 
-              alt="M. V. Scholars School" 
-              className="brand-logo-img" 
-              onError={() => setLogoFailed(true)} 
-            />
-          ) : (
-            <span className="brand-mark">MV<span>✦</span></span>
-          )}
-          <span>
+          <BrandLogo />
+          <div className="brand-text">
             <strong>M. V. Scholars</strong>
             <small>PRE-NURSERY TO 5TH</small>
-          </span>
+            <div className="brand-slogan">
+              <span>ला तेरे लाल को इंसान बना दूँ</span>
+              <span>दुनिया पूजे इतना महान बना दूँ</span>
+            </div>
+          </div>
         </a>
 
+        {/* Desktop Navigation Box (hidden on mobile phones) */}
         <nav className="header-nav-box">
           <a 
             href="#home" 
@@ -412,6 +631,13 @@ function App() {
             Photo Gallery
           </a>
           <a 
+            href="#facilities" 
+            onClick={() => handleNavClick('facilities', '#facilities')}
+            className={activeNav === 'facilities' ? 'active' : ''}
+          >
+            Facilities
+          </a>
+          <a 
             href="#admissions"
             onClick={() => handleNavClick('admissions', '#admissions')}
             className={activeNav === 'admissions' ? 'active' : ''}
@@ -427,10 +653,138 @@ function App() {
           </a>
         </nav>
 
-        <a className="nav-cta" href={whatsapp} target="_blank" rel="noreferrer">
-          Enquire Now <ArrowRight size={16} />
-        </a>
+        <div className="header-actions">
+          <a className="nav-cta" href={whatsapp} target="_blank" rel="noreferrer">
+            Enquire Now <ArrowRight size={16} />
+          </a>
+
+          {/* Small Purple Circular Menu Toggle Button with Orange Lines on the RIGHT */}
+          <button 
+            type="button" 
+            className="mobile-menu-toggle-btn" 
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open navigation menu"
+          >
+            <span className="menu-bar"></span>
+            <span className="menu-bar"></span>
+            <span className="menu-bar"></span>
+          </button>
+        </div>
       </header>
+
+      {/* MOBILE NAVIGATION DRAWER OVERLAY */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <div className="mobile-nav-overlay" onClick={() => setMobileMenuOpen(false)}>
+            <motion.div 
+              className="mobile-nav-drawer"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Drawer Header */}
+              <div className="mobile-drawer-header">
+                <div className="mobile-drawer-brand">
+                  <BrandLogo />
+                  <div>
+                    <strong>M. V. Scholars</strong>
+                    <small>PRE-NURSERY TO 5TH</small>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  className="mobile-drawer-close"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close navigation menu"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Slogan in drawer */}
+              <div className="mobile-drawer-slogan">
+                <span>ला तेरे लाल को इंसान बना दूँ</span>
+                <span>दुनिया पूजे इतना महान बना दूँ</span>
+              </div>
+
+              {/* Navigation Options */}
+              <div className="mobile-drawer-links">
+                <a 
+                  href="#home" 
+                  onClick={() => handleNavClick('home', '#home')}
+                  className={activeNav === 'home' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">🏠</span> Home
+                </a>
+                <a 
+                  href="#about" 
+                  onClick={() => handleNavClick('about', '#about')}
+                  className={activeNav === 'about' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">🌸</span> About Us
+                </a>
+                <a 
+                  href="#classes" 
+                  onClick={() => handleNavClick('classes', '#classes')}
+                  className={activeNav === 'classes' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">🎨</span> Programmes & Classes
+                </a>
+                <a 
+                  href="#gallery" 
+                  onClick={() => handleNavClick('gallery', '#gallery')}
+                  className={activeNav === 'gallery' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">📸</span> Photo Gallery
+                </a>
+                <a 
+                  href="#facilities" 
+                  onClick={() => handleNavClick('facilities', '#facilities')}
+                  className={activeNav === 'facilities' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">🛡️</span> Campus Facilities
+                </a>
+                <a 
+                  href="#admissions"
+                  onClick={() => handleNavClick('admissions', '#admissions')}
+                  className={activeNav === 'admissions' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">📝</span> Admissions 2026
+                </a>
+                <a 
+                  href="#contact" 
+                  onClick={() => handleNavClick('contact', '#contact')}
+                  className={activeNav === 'contact' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">📍</span> Locate School
+                </a>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="mobile-drawer-actions">
+                <a 
+                  className="mobile-drawer-whatsapp-btn" 
+                  href={whatsapp} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <MessageCircle size={18} /> Enquire on WhatsApp
+                </a>
+                <a 
+                  className="mobile-drawer-call-btn" 
+                  href="tel:9212018600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Phone size={16} /> Call: +91 92120 18600
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* 1. SEPARATE PAGE: PHOTO GALLERY LIST PAGE (#gallery) */}
       {isGalleryPage && (
@@ -450,8 +804,12 @@ function App() {
 
           {/* Cards Grid matching Birla Vidya Niketan in the user's screenshot */}
           <section className="gallery-container">
-            <div className="bvn-cards-grid">
-              {eventAlbums.map((evt) => (
+            <SideMovingCarousel
+              items={eventAlbums}
+              id="gallery-page-carousel"
+              desktopCols={3}
+              ariaLabel="All Photo Gallery Albums"
+              renderItem={(evt) => (
                 <div 
                   className="bvn-card" 
                   key={evt.id}
@@ -476,8 +834,8 @@ function App() {
                     <div className="bvn-btn-arrow">→</div>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            />
           </section>
         </main>
       )}
@@ -748,9 +1106,6 @@ function App() {
           {/* HERO */}
           <section className="hero" id="home">
             <div className="hero-copy">
-              <div className="trust-badge">
-                <Building2 size={14} /> Run by Manju Vijay Charitable Trust
-              </div>
               <div className="eyebrow">
                 <Sparkles size={15} /> Little steps. Big dreams.
               </div>
@@ -761,6 +1116,9 @@ function App() {
               <p>
                 Empowering young learners from Pre-Nursery to 5th Grade. A nurturing environment filled with curiosity, friendship, values, and academic excellence.
               </p>
+              <div className="trust-badge" style={{ marginTop: '4px', marginBottom: '4px' }}>
+                <Building2 size={14} /> Run by Manju Vijay Charitable Trust
+              </div>
               <div className="hero-actions">
                 <a className="primary" href={whatsapp} target="_blank" rel="noreferrer">
                   Explore Admissions <ArrowRight size={17} />
@@ -878,24 +1236,28 @@ function App() {
           <section className="classes-section" id="classes">
             <div className="center-heading">
               <div className="eyebrow">Academic Curriculum</div>
-              <h2>Classes from <em>Pre-Nursery to 5th</em></h2>
+              <h2 className="classes-heading">
+                Classes from <span className="nowrap-mobile"><em>Pre-Nursery to 5th</em></span>
+              </h2>
               <p>Thoughtfully planned stages of learning tailored for children aged 3 to 10 years.</p>
             </div>
 
             <div className="classes-grid">
               <div className="class-group-card foundational">
-                <div className="class-group-header">
-                  <div>
-                    <h3 style={{ fontFamily: 'Fredoka', fontSize: '24px', color: 'var(--purple)', margin: '0 0 4px 0' }}>
-                      Kindergarten & Foundational Wing
-                    </h3>
-                    <small style={{ color: 'var(--muted)' }}>Activity-based joyful early learning</small>
+                <div>
+                  <div className="class-group-header">
+                    <div>
+                      <h3 style={{ fontFamily: 'Fredoka', fontSize: '26px', color: 'var(--purple)', margin: '0 0 6px 0' }}>
+                        Kindergarten & Foundational Wing
+                      </h3>
+                      <small style={{ color: 'var(--muted)', fontSize: '14px', fontWeight: 600 }}>Activity-based joyful early learning</small>
+                    </div>
+                    <span className="class-badge-age">Ages 3 – 5 Years</span>
                   </div>
-                  <span className="class-badge-age">Ages 3 – 5 Years</span>
+                  <p style={{ color: 'var(--ink)', fontSize: '15.5px', lineHeight: '1.8', margin: '18px 0 0' }}>
+                    Sensory play, communication skills, phonics, numbers, art, and motor development to nurture natural curiosity.
+                  </p>
                 </div>
-                <p style={{ color: 'var(--ink)', fontSize: '15px', lineHeight: '1.7' }}>
-                  Sensory play, communication skills, phonics, numbers, art, and motor development to nurture natural curiosity.
-                </p>
                 <div className="class-pills">
                   {foundationalClasses.map((cls) => (
                     <span className="class-pill" key={cls}>✦ {cls}</span>
@@ -904,18 +1266,20 @@ function App() {
               </div>
 
               <div className="class-group-card primary-wing">
-                <div className="class-group-header">
-                  <div>
-                    <h3 style={{ fontFamily: 'Fredoka', fontSize: '24px', color: 'var(--purple)', margin: '0 0 4px 0' }}>
-                      Primary School Wing
-                    </h3>
-                    <small style={{ color: 'var(--muted)' }}>Strong academic & personality growth</small>
+                <div>
+                  <div className="class-group-header">
+                    <div>
+                      <h3 style={{ fontFamily: 'Fredoka', fontSize: '26px', color: 'var(--purple)', margin: '0 0 6px 0' }}>
+                        Primary School Wing
+                      </h3>
+                      <small style={{ color: 'var(--muted)', fontSize: '14px', fontWeight: 600 }}>Strong academic & personality growth</small>
+                    </div>
+                    <span className="class-badge-age">Ages 6 – 10 Years</span>
                   </div>
-                  <span className="class-badge-age">Ages 6 – 10 Years</span>
+                  <p style={{ color: 'var(--ink)', fontSize: '15.5px', lineHeight: '1.8', margin: '18px 0 0' }}>
+                    Comprehensive primary curriculum focusing on mathematics, language, environmental studies, moral science, and physical education.
+                  </p>
                 </div>
-                <p style={{ color: 'var(--ink)', fontSize: '15px', lineHeight: '1.7' }}>
-                  Comprehensive primary curriculum focusing on mathematics, language, environmental studies, moral science, and physical education.
-                </p>
                 <div className="class-pills">
                   {primaryClasses.map((cls) => (
                     <span className="class-pill" key={cls}>✦ {cls}</span>
@@ -929,7 +1293,9 @@ function App() {
           <section className="learning section" id="learning">
             <div className="center-heading">
               <div className="eyebrow">Our Philosophy</div>
-              <h2>Learning that feels like <em>play.</em></h2>
+              <h2 className="philosophy-heading">
+                <span className="nowrap-mobile">Learning that feels like <em>play.</em></span>
+              </h2>
               <p>Encouraging young minds to explore, question, and grow with confidence.</p>
             </div>
             <div className="activity-grid">
@@ -948,6 +1314,34 @@ function App() {
                 </motion.article>
               ))}
             </div>
+          </section>
+
+          {/* CAMPUS FACILITIES & SAFETY (NO TRANSPORT FACILITY) */}
+          <section className="facilities-section" id="facilities">
+            <div className="center-heading">
+              <div className="eyebrow">Safe & Inspiring Environment</div>
+              <h2>Campus Facilities Built for <em>Care & Growth</em></h2>
+              <p>Everything your child needs for a safe, hygienic, joyful, and active learning journey.</p>
+            </div>
+
+            <SideMovingCarousel
+              items={facilities}
+              id="facilities-carousel"
+              desktopCols={3}
+              ariaLabel="Campus Facilities and Safety"
+              renderItem={(f) => (
+                <div 
+                  className="facility-card" 
+                  style={{ backgroundImage: `url(${f.bgImage})` }}
+                >
+                  <div className="facility-icon-box">
+                    <f.icon size={26} />
+                  </div>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
+                </div>
+              )}
+            />
           </section>
 
           {/* PRINCIPAL & FOUNDER SPOTLIGHT (HOMEPAGE) */}
@@ -1019,8 +1413,12 @@ function App() {
               </button>
             </div>
 
-            <div className="bvn-cards-grid" style={{ marginTop: '28px' }}>
-              {eventAlbums.slice(0, 4).map((evt) => (
+            <SideMovingCarousel
+              items={eventAlbums.slice(0, 4)}
+              id="gallery-teaser-carousel"
+              desktopCols={4}
+              ariaLabel="Photo Gallery Albums"
+              renderItem={(evt) => (
                 <div 
                   className="bvn-card" 
                   key={evt.id}
@@ -1045,28 +1443,182 @@ function App() {
                     <div className="bvn-btn-arrow">→</div>
                   </div>
                 </div>
+              )}
+            />
+          </section>
+
+          {/* PARENT TESTIMONIALS */}
+          <section className="testimonials-section" id="testimonials">
+            <div className="center-heading">
+              <div className="eyebrow">Loved by Families</div>
+              <h2>What Parents Say About <em>M. V. Scholars</em></h2>
+              <p>Hear from families who have experienced our nurturing teachers and joyful learning culture.</p>
+            </div>
+
+            <div className="testimonials-grid">
+              {testimonials.map((t) => (
+                <div className="testimonial-card" key={t.name}>
+                  <div>
+                    <div className="testimonial-stars">★★★★★</div>
+                    <p className="testimonial-quote">"{t.text}"</p>
+                  </div>
+                  <div className="testimonial-author">
+                    <div className="testimonial-avatar">{t.avatar}</div>
+                    <div className="testimonial-info">
+                      <strong>{t.name}</strong>
+                      <small>{t.child}</small>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </section>
 
-          {/* ADMISSIONS CTA */}
-          <section className="admissions">
+          {/* ADMISSIONS & INTERACTIVE ENQUIRY FORM */}
+          <section className="admissions" id="admissions">
             <div className="admission-doodle">✿</div>
             <div className="eyebrow">Admissions Open (Pre-Nursery to 5th)</div>
             <h2>
               Give your child a<br />
               warm & <em>inspiring</em> education.
             </h2>
-            <p>
-              School Timings: <strong>8:00 AM to 1:00 PM</strong> | Age Criteria: <strong>3 to 10 Years</strong><br />
-              Run under Manju Vijay Charitable Trust. We welcome you to visit our campus.
+            <p style={{ maxWidth: '640px', margin: '0 auto 24px' }}>
+              Admissions open for the current and upcoming academic session (Ages 2.5 to 11 Years).<br />
+              Fill out the quick enquiry below to connect directly with our admissions team.
             </p>
-            <a className="primary primary-light" href={whatsapp} target="_blank" rel="noreferrer">
-              Enquire on WhatsApp <ArrowRight size={17} />
-            </a>
+
+            <div className="admission-form-wrapper">
+              <div>
+                <h3 style={{ fontFamily: 'Fredoka', fontSize: '24px', color: 'var(--purple)', margin: '0 0 8px 0' }}>
+                  Quick Admission Enquiry
+                </h3>
+                <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '0 0 20px 0' }}>
+                  Send your enquiry directly via WhatsApp or Email. We usually respond within a few hours!
+                </p>
+
+                {formSubmitted && (
+                  <div style={{ background: '#e6f9ed', border: '1px solid #a3e6b9', padding: '12px 16px', borderRadius: '12px', color: '#166534', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle2 size={18} /> Thank you! Your enquiry has been drafted. You can re-send or modify your details anytime.
+                  </div>
+                )}
+
+                <form className="admission-form" onSubmit={handleWhatsAppSubmit}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="parentName">Parent's Full Name *</label>
+                      <input 
+                        id="parentName"
+                        type="text" 
+                        placeholder="e.g. Rakesh Kumar" 
+                        value={enquiryForm.parentName}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, parentName: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone">Phone / WhatsApp No. *</label>
+                      <input 
+                        id="phone"
+                        type="tel" 
+                        placeholder="e.g. 9876543210" 
+                        value={enquiryForm.phone}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="childName">Child's Name & Age</label>
+                      <input 
+                        id="childName"
+                        type="text" 
+                        placeholder="e.g. Aarav (4 Years)" 
+                        value={enquiryForm.childName}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, childName: e.target.value })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="selectedClass">Class Applying For</label>
+                      <select 
+                        id="selectedClass"
+                        value={enquiryForm.selectedClass}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, selectedClass: e.target.value })}
+                      >
+                        <optgroup label="Kindergarten / Foundational">
+                          <option value="Pre-Nursery">Pre-Nursery (Age 2.5 - 3 yrs)</option>
+                          <option value="Nursery">Nursery (Age 3 - 4 yrs)</option>
+                          <option value="LKG">LKG (Age 4 - 5 yrs)</option>
+                          <option value="UKG">UKG (Age 5 - 6 yrs)</option>
+                        </optgroup>
+                        <optgroup label="Primary Wing">
+                          <option value="Class 1st">Class 1st (Age 6+ yrs)</option>
+                          <option value="Class 2nd">Class 2nd</option>
+                          <option value="Class 3rd">Class 3rd</option>
+                          <option value="Class 4th">Class 4th</option>
+                          <option value="Class 5th">Class 5th</option>
+                        </optgroup>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="message">Message / Questions (Optional)</label>
+                    <textarea 
+                      id="message"
+                      rows="3" 
+                      placeholder="Ask about fee structure, timings, or request a campus walkthrough..."
+                      value={enquiryForm.message}
+                      onChange={(e) => setEnquiryForm({ ...enquiryForm, message: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-btn-row">
+                    <button type="submit" className="btn-send-whatsapp">
+                      <MessageCircle size={18} /> Send via WhatsApp
+                    </button>
+                    <button type="button" onClick={handleEmailSubmit} className="btn-send-email">
+                      <Mail size={18} /> Send via Email
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* SIDE HIGHLIGHTS */}
+              <div className="admission-info-card">
+                <div>
+                  <h4>Why Parents Choose Us</h4>
+                  <div className="admission-check-list">
+                    <div className="admission-check-item">
+                      <CheckCircle2 size={18} />
+                      <span><strong>Run by Manju Vijay Charitable Trust:</strong> Non-profit commitment to affordable excellence.</span>
+                    </div>
+                    <div className="admission-check-item">
+                      <CheckCircle2 size={18} />
+                      <span><strong>Individual Teacher Attention:</strong> Healthy student-teacher ratio ensuring no child is left behind.</span>
+                    </div>
+                    <div className="admission-check-item">
+                      <CheckCircle2 size={18} />
+                      <span><strong>Modern CCTV Monitored:</strong> Safe classrooms and sanitized child-height facilities.</span>
+                    </div>
+                    <div className="admission-check-item">
+                      <CheckCircle2 size={18} />
+                      <span><strong>Holistic Curriculum:</strong> Daily yoga, moral science, festive activities, and joyful sports.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="admission-direct-box">
+                  <div style={{ color: 'var(--purple)', fontWeight: 800, marginBottom: '4px' }}>Prefer to call directly?</div>
+                  <div>Reach our Principal's desk: <strong>+91 87509 94677</strong></div>
+                  <div>Timings: <strong>8:00 AM – 1:00 PM (Mon–Sat)</strong></div>
+                </div>
+              </div>
+            </div>
           </section>
 
-          {/* CONTACT */}
+          {/* CONTACT & GOOGLE MAP */}
           <section className="contact section" id="contact">
             <div>
               <div className="eyebrow">Visit & Connect</div>
@@ -1075,49 +1627,77 @@ function App() {
                 We would love to welcome you and your child. Reach out for admission queries, campus walkthroughs, and syllabus details.
               </p>
             </div>
-            <div className="contact-card">
-              <a href={MAPS_URL} target="_blank" rel="noreferrer">
-                <MapPin />
-                <span>
-                  <strong>School Location (Google Maps)</strong>
-                  <small>Plot No. 95/4, Baba Haridass Colony, near CNC Hospital, Tikri Kalan, New Delhi – 110041 (Click to open map)</small>
-                </span>
-              </a>
-              <div style={{ display: 'flex', gap: '15px', padding: '16px 10px', borderBottom: '1px solid #f1e9e2', color: 'var(--purple)' }}>
-                <Clock />
-                <span style={{ display: 'grid', gap: '5px', color: 'var(--ink)' }}>
-                  <strong>School Timings</strong>
-                  <small style={{ fontSize: '13px', color: 'var(--muted)' }}>8:00 AM – 1:00 PM (Monday to Saturday)</small>
-                </span>
+
+            <div className="contact-grid">
+              <div className="contact-card">
+                <a href={MAPS_URL} target="_blank" rel="noreferrer">
+                  <MapPin />
+                  <span>
+                    <strong>School Location (Google Maps)</strong>
+                    <small>Plot No. 95/4, Baba Haridass Colony, near CNC Hospital, Tikri Kalan, New Delhi – 110041 (Click to open map)</small>
+                  </span>
+                </a>
+                <div style={{ display: 'flex', gap: '15px', padding: '16px 10px', borderBottom: '1px solid #f1e9e2', color: 'var(--purple)' }}>
+                  <Clock />
+                  <span style={{ display: 'grid', gap: '5px', color: 'var(--ink)' }}>
+                    <strong>School Timings</strong>
+                    <small style={{ fontSize: '13px', color: 'var(--muted)' }}>8:00 AM – 1:00 PM (Monday to Saturday)</small>
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '15px', padding: '16px 10px', borderBottom: '1px solid #f1e9e2', color: 'var(--purple)' }}>
+                  <Building2 />
+                  <span style={{ display: 'grid', gap: '5px', color: 'var(--ink)' }}>
+                    <strong>Managed By</strong>
+                    <small style={{ fontSize: '13px', color: 'var(--muted)' }}>Manju Vijay Charitable Trust</small>
+                  </span>
+                </div>
+                <a href="tel:+918750994677">
+                  <Phone />
+                  <span>
+                    <strong>Call Us</strong>
+                    <small>+91 87509 94677</small>
+                  </span>
+                </a>
+                <a href={`mailto:${EMAIL}`}>
+                  <Mail />
+                  <span>
+                    <strong>Email</strong>
+                    <small>{EMAIL}</small>
+                  </span>
+                </a>
+                <a href="https://www.instagram.com/mvscholarspreschool_/" target="_blank" rel="noreferrer">
+                  <Instagram />
+                  <span>
+                    <strong>Instagram</strong>
+                    <small>@mvscholarspreschool_</small>
+                  </span>
+                </a>
               </div>
-              <div style={{ display: 'flex', gap: '15px', padding: '16px 10px', borderBottom: '1px solid #f1e9e2', color: 'var(--purple)' }}>
-                <Building2 />
-                <span style={{ display: 'grid', gap: '5px', color: 'var(--ink)' }}>
-                  <strong>Managed By</strong>
-                  <small style={{ fontSize: '13px', color: 'var(--muted)' }}>Manju Vijay Charitable Trust</small>
-                </span>
+
+              {/* INTERACTIVE GOOGLE MAP EMBED */}
+              <div className="map-card">
+                <div className="map-header">
+                  <div>
+                    <strong>Campus Location</strong>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Tikri Kalan, New Delhi – 110041</div>
+                  </div>
+                  <a 
+                    href={MAPS_URL} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="map-header-btn"
+                  >
+                    <MapPin size={13} /> Open in Google Maps
+                  </a>
+                </div>
+                <iframe
+                  title="M. V. Scholars School Location Map"
+                  src="https://maps.google.com/maps?q=Plot+No.+95%2F4%2C+Baba+Haridass+Colony%2C+near+CNC+Hospital%2C+Tikri+Kalan%2C+New+Delhi+110041&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  className="map-iframe-box"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
               </div>
-              <a href="tel:+918750994677">
-                <Phone />
-                <span>
-                  <strong>Call Us</strong>
-                  <small>+91 87509 94677</small>
-                </span>
-              </a>
-              <a href="mailto:rudrathakurravi7@gmail.com">
-                <Mail />
-                <span>
-                  <strong>Email</strong>
-                  <small>rudrathakurravi7@gmail.com</small>
-                </span>
-              </a>
-              <a href="https://www.instagram.com/mvscholarspreschool_/" target="_blank" rel="noreferrer">
-                <Instagram />
-                <span>
-                  <strong>Instagram</strong>
-                  <small>@mvscholarspreschool_</small>
-                </span>
-              </a>
             </div>
           </section>
         </main>
@@ -1206,35 +1786,32 @@ function App() {
 
       <footer>
         <a className="brand" href="#home" onClick={() => navigateTo('#home')}>
-          {!logoFailed ? (
-            <img 
-              src="/images/logo/logo.png" 
-              alt="M. V. Scholars School" 
-              className="brand-logo-img" 
-              onError={() => setLogoFailed(true)} 
-            />
-          ) : (
-            <span className="brand-mark">MV<span>✦</span></span>
-          )}
-          <span>
+          <BrandLogo />
+          <div className="brand-text">
             <strong>M. V. Scholars School</strong>
             <small>RUN BY MANJU VIJAY CHARITABLE TRUST</small>
-          </span>
+            <div className="brand-slogan">
+              <span>ला तेरे लाल को इंसान बना दूँ</span>
+              <span>दुनिया पूजे इतना महान बना दूँ</span>
+            </div>
+          </div>
         </a>
         <span>
           © {new Date().getFullYear()} M. V. Scholars School. Run by Manju Vijay Charitable Trust.
         </span>
-        <a href="#gallery" onClick={() => navigateTo('#gallery')}>Photo Gallery 📸</a>
       </footer>
 
+      {/* FLOATING WHATSAPP BUTTON (ALL PAGES) */}
       <a 
-        className="whatsapp-float" 
+        className="floating-whatsapp-btn" 
         href={whatsapp} 
         target="_blank" 
         rel="noreferrer" 
         aria-label="WhatsApp admission enquiry"
       >
-        💬
+        <span className="whatsapp-pulse-dot"></span>
+        <MessageCircle size={20} />
+        <span>Chat on WhatsApp</span>
       </a>
     </>
   );
