@@ -481,25 +481,8 @@ function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // PARENT FEEDBACK & REVIEWS STATE
-  const [reviewList, setReviewList] = useState(() => {
-    try {
-      const saved = localStorage.getItem('mvsps_parent_reviews');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const clean = parsed.filter(r =>
-            !r.name.toLowerCase().includes('suresh') &&
-            !r.name.toLowerCase().includes('health check') &&
-            !r.name.toLowerCase().includes('test')
-          );
-          return [...clean, ...testimonials];
-        }
-      }
-    } catch (e) {
-      console.error('Error loading reviews from localStorage', e);
-    }
-    return testimonials;
-  });
+  // Google Sheet is the real-time single source of truth. Deleting a row from the sheet automatically deletes it here.
+  const [reviewList, setReviewList] = useState(testimonials);
 
   const [feedbackForm, setFeedbackForm] = useState({
     parentName: '',
@@ -522,69 +505,28 @@ function App() {
     }
   };
 
-  const isTestOnly = (name = '', text = '') => {
-    const n = name.toLowerCase();
-    const t = text.toLowerCase();
-    return (
-      n.includes('suresh') ||
-      n.includes('health check') ||
-      n.includes('test') ||
-      t.includes('health check')
-    );
-  };
-
-  // Automatically fetch all live reviews from Google Sheet on page load
+  // Automatically fetch live reviews directly from Google Sheet on page load
   useEffect(() => {
-    // Clean up any test reviews in localStorage
+    // Clear any old local cache so Google Sheet remains the 100% authoritative source
     try {
-      const saved = localStorage.getItem('mvsps_parent_reviews');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        const filtered = parsed.filter(r => !isTestOnly(r.name, r.text));
-        localStorage.setItem('mvsps_parent_reviews', JSON.stringify(filtered));
-      }
-    } catch (e) { }
+      localStorage.removeItem('mvsps_parent_reviews');
+    } catch (e) {}
 
     if (!FEEDBACK_SHEET_URL) return;
     let isMounted = true;
     setIsReviewsLoading(true);
 
-    fetch(FEEDBACK_SHEET_URL)
+    // Cache-busting URL (?t=...) ensures deleted rows in Google Sheet reflect immediately
+    const liveSheetUrl = `${FEEDBACK_SHEET_URL}?t=${Date.now()}`;
+
+    fetch(liveSheetUrl, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (!isMounted) return;
         if (data && data.result === 'success' && Array.isArray(data.reviews)) {
-          // Filter out test reviews
-          const validSheetReviews = data.reviews.filter(
-            (sheetRev) => !isTestOnly(sheetRev.name, sheetRev.text)
-          );
-
-          setReviewList(() => {
-            const localSaved = JSON.parse(localStorage.getItem('mvsps_parent_reviews') || '[]');
-            const cleanLocal = localSaved.filter(r => !isTestOnly(r.name, r.text));
-            const combined = [...cleanLocal];
-
-            // Add sheet reviews (e.g. Shubhi Singh)
-            validSheetReviews.forEach((sheetRev) => {
-              const exists = combined.some(
-                (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() &&
-                  c.text.trim().slice(0, 30) === sheetRev.text.trim().slice(0, 30)
-              );
-              if (!exists) {
-                combined.push(sheetRev);
-              }
-            });
-
-            // Append base testimonials (Pooja Sharma, Rajesh Kumar, Sunita Yadav)
-            testimonials.forEach((baseRev) => {
-              const exists = combined.some((c) => c.name.toLowerCase() === baseRev.name.toLowerCase());
-              if (!exists) {
-                combined.push(baseRev);
-              }
-            });
-
-            return combined;
-          });
+          // Directly set reviews from Google Sheet + base testimonials
+          // If any row is deleted from the Google Sheet, it is automatically removed here!
+          setReviewList([...data.reviews, ...testimonials]);
         }
       })
       .catch((err) => {
@@ -628,16 +570,8 @@ function App() {
       isUserSubmitted: true
     };
 
-    const updated = [newReview, ...reviewList];
-    setReviewList(updated);
-
-    try {
-      const userOnly = updated.filter(r => r.isUserSubmitted);
-      localStorage.setItem('mvsps_parent_reviews', JSON.stringify(userOnly));
-    } catch (err) {
-      console.error('Error saving review to localStorage', err);
-    }
-
+    // Prepend to current view immediately so the user sees their feedback
+    setReviewList((prev) => [newReview, ...prev]);
     setFeedbackSubmitted(true);
 
     // Automatically send review to Google Sheet if Webhook URL is set
@@ -1886,8 +1820,8 @@ Thank you!`;
 
               {reviewList.length > 1 && (
                 <div className="reviews-scroll-arrows">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="review-arrow-btn"
                     onClick={() => scrollReviews('left')}
                     aria-label="Scroll reviews left"
@@ -1895,8 +1829,8 @@ Thank you!`;
                   >
                     <ChevronLeft size={18} />
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="review-arrow-btn"
                     onClick={() => scrollReviews('right')}
                     aria-label="Scroll reviews right"
