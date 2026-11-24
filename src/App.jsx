@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { 
-  ArrowRight, Heart, BookOpen, Palette, Music, Star, MapPin, 
+import {
+  ArrowRight, Heart, BookOpen, Palette, Music, Star, MapPin,
   Phone, Mail, Instagram, Clock, GraduationCap, Users, Sparkles, Building2,
   Calendar, Camera, Images, X, ChevronLeft, ChevronRight, ZoomIn, Home, ArrowLeft,
   MessageCircle, ShieldCheck, Droplets, HeartHandshake, Smile, CheckCircle2, Send, Award, Check
@@ -11,8 +11,8 @@ const PHONE = '918750994677';
 const EMAIL = 'mvscholars7@gmail.com';
 const MAPS_URL = 'https://maps.app.goo.gl/fUpGj39ZQUtdzi2a7?g_st=aw';
 const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M. V. Scholars Pre School! I would like to enquire about admissions.')}`;
-// Google Sheets Webhook URL for saving parent reviews automatically
-const FEEDBACK_SHEET_URL = import.meta.env.VITE_FEEDBACK_SHEET_URL || 'https://script.google.com/macros/s/AKfycbzRvhDSnV6e_yJPQIflx8vzse376kQztxYDF3NjUPu_OZUjcSaW0ReUS6u5-buW2jZkKA/exec';
+// Google Sheets Webhook URL for saving and loading parent reviews live
+const FEEDBACK_SHEET_URL = import.meta.env.VITE_FEEDBACK_SHEET_URL || 'https://script.google.com/macros/s/AKfycbwQgWc4KMy0VGsaXPigv3xo3E7-IQ2ejnx_YE7eNzOTi-QJ17NM0Zj8phvscJU-MkBh/exec';
 
 const activities = [
   { icon: BookOpen, title: 'Foundational Learning', text: 'Building early literacy, numeracy, and curiosity through guided discovery and playful activities.' },
@@ -233,15 +233,15 @@ function ScrollZoomImage({ src, fallback, alt, className = '', onClick, title, o
   const scale = useTransform(scrollYProgress, [0, 0.45, 1], [0.93, 1.06, 0.93]);
 
   return (
-    <div 
-      ref={containerRef} 
-      className={className} 
-      onClick={onClick} 
-      title={title} 
-      style={{ 
-        width: '100%', 
-        height: '100%', 
-        overflow: overflowHidden ? 'hidden' : 'visible' 
+    <div
+      ref={containerRef}
+      className={className}
+      onClick={onClick}
+      title={title}
+      style={{
+        width: '100%',
+        height: '100%',
+        overflow: overflowHidden ? 'hidden' : 'visible'
       }}
     >
       <motion.div
@@ -412,8 +412,8 @@ function SideMovingCarousel({ items, renderItem, id, desktopCols = 3, ariaLabel 
 
   return (
     <div className="side-carousel-wrapper" id={id}>
-      <div 
-        className={`side-carousel-track desktop-cols-${desktopCols}`} 
+      <div
+        className={`side-carousel-track desktop-cols-${desktopCols}`}
         ref={trackRef}
         onScroll={handleScroll}
         role="region"
@@ -528,8 +528,8 @@ function App() {
             // Add sheet reviews if not already present in localSaved
             data.reviews.forEach((sheetRev) => {
               const exists = combined.some(
-                (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() && 
-                       c.text.trim().slice(0, 30) === sheetRev.text.trim().slice(0, 30)
+                (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() &&
+                  c.text.trim().slice(0, 30) === sheetRev.text.trim().slice(0, 30)
               );
               if (!exists) {
                 combined.push(sheetRev);
@@ -781,50 +781,50 @@ Thank you!`;
 
         {/* Desktop Navigation Box (hidden on mobile phones) */}
         <nav className="header-nav-box">
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             onClick={() => handleNavClick('home', '#home')}
             className={activeNav === 'home' ? 'active' : ''}
           >
             Home
           </a>
-          <a 
-            href="#about" 
+          <a
+            href="#about"
             onClick={() => handleNavClick('about', '#about')}
             className={activeNav === 'about' ? 'active' : ''}
           >
             About Us
           </a>
-          <a 
-            href="#classes" 
+          <a
+            href="#classes"
             onClick={() => handleNavClick('classes', '#classes')}
             className={activeNav === 'classes' ? 'active' : ''}
           >
             Programmes
           </a>
-          <a 
-            href="#gallery" 
+          <a
+            href="#gallery"
             onClick={() => handleNavClick('gallery', '#gallery')}
             className={activeNav === 'gallery' ? 'active' : ''}
           >
             Photo Gallery
           </a>
-          <a 
-            href="#facilities" 
+          <a
+            href="#facilities"
             onClick={() => handleNavClick('facilities', '#facilities')}
             className={activeNav === 'facilities' ? 'active' : ''}
           >
             Facilities
           </a>
-          <a 
+          <a
             href="#admissions"
             onClick={() => handleNavClick('admissions', '#admissions')}
             className={activeNav === 'admissions' ? 'active' : ''}
           >
             Admissions
           </a>
-          <a 
-            href="#contact" 
+          <a
+            href="#contact"
             onClick={() => handleNavClick('contact', '#contact')}
             className={activeNav === 'contact' ? 'active' : ''}
           >
@@ -838,9 +838,9 @@ Thank you!`;
           </a>
 
           {/* Small Purple Circular Menu Toggle Button with Orange Lines on the RIGHT */}
-          <button 
-            type="button" 
-            className="mobile-menu-toggle-btn" 
+          <button
+            type="button"
+            className="mobile-menu-toggle-btn"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open navigation menu"
           >
@@ -855,7 +855,7 @@ Thank you!`;
       <AnimatePresence>
         {mobileMenuOpen && (
           <div className="mobile-nav-overlay" onClick={() => setMobileMenuOpen(false)}>
-            <motion.div 
+            <motion.div
               className="mobile-nav-drawer"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
@@ -872,8 +872,8 @@ Thank you!`;
                     <small>PRE-NURSERY TO 5TH</small>
                   </div>
                 </div>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="mobile-drawer-close"
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close navigation menu"
@@ -890,57 +890,57 @@ Thank you!`;
 
               {/* Navigation Options */}
               <div className="mobile-drawer-links">
-                <a 
-                  href="#home" 
+                <a
+                  href="#home"
                   onClick={() => handleNavClick('home', '#home')}
                   className={activeNav === 'home' ? 'active' : ''}
                 >
                   <span className="drawer-icon">🏠</span> Home
                 </a>
-                <a 
-                  href="#about" 
+                <a
+                  href="#about"
                   onClick={() => handleNavClick('about', '#about')}
                   className={activeNav === 'about' ? 'active' : ''}
                 >
                   <span className="drawer-icon">🌸</span> About Us
                 </a>
-                <a 
-                  href="#classes" 
+                <a
+                  href="#classes"
                   onClick={() => handleNavClick('classes', '#classes')}
                   className={activeNav === 'classes' ? 'active' : ''}
                 >
                   <span className="drawer-icon">🎨</span> Programmes & Classes
                 </a>
-                <a 
-                  href="#gallery" 
+                <a
+                  href="#gallery"
                   onClick={() => handleNavClick('gallery', '#gallery')}
                   className={activeNav === 'gallery' ? 'active' : ''}
                 >
                   <span className="drawer-icon">📸</span> Photo Gallery
                 </a>
-                <a 
-                  href="#facilities" 
+                <a
+                  href="#facilities"
                   onClick={() => handleNavClick('facilities', '#facilities')}
                   className={activeNav === 'facilities' ? 'active' : ''}
                 >
                   <span className="drawer-icon">🛡️</span> Campus Facilities
                 </a>
-                <a 
-                  href="#testimonials" 
+                <a
+                  href="#testimonials"
                   onClick={() => handleNavClick('testimonials', '#testimonials')}
                   className={activeNav === 'testimonials' ? 'active' : ''}
                 >
                   <span className="drawer-icon">⭐</span> Parent Reviews & Feedback
                 </a>
-                <a 
+                <a
                   href="#admissions"
                   onClick={() => handleNavClick('admissions', '#admissions')}
                   className={activeNav === 'admissions' ? 'active' : ''}
                 >
                   <span className="drawer-icon">📝</span> Admissions 2026
                 </a>
-                <a 
-                  href="#contact" 
+                <a
+                  href="#contact"
                   onClick={() => handleNavClick('contact', '#contact')}
                   className={activeNav === 'contact' ? 'active' : ''}
                 >
@@ -950,17 +950,17 @@ Thank you!`;
 
               {/* Quick Actions */}
               <div className="mobile-drawer-actions">
-                <a 
-                  className="mobile-drawer-whatsapp-btn" 
-                  href={whatsapp} 
-                  target="_blank" 
+                <a
+                  className="mobile-drawer-whatsapp-btn"
+                  href={whatsapp}
+                  target="_blank"
                   rel="noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <MessageCircle size={18} /> Enquire on WhatsApp
                 </a>
-                <a 
-                  className="mobile-drawer-call-btn" 
+                <a
+                  className="mobile-drawer-call-btn"
                   href="tel:9212018600"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -996,8 +996,8 @@ Thank you!`;
               desktopCols={3}
               ariaLabel="All Photo Gallery Albums"
               renderItem={(evt) => (
-                <div 
-                  className="bvn-card" 
+                <div
+                  className="bvn-card"
                   key={evt.id}
                   onClick={() => navigateTo(`#gallery/${evt.id}`)}
                 >
@@ -1030,7 +1030,7 @@ Thank you!`;
       {isEventDetailPage && (
         <main>
           {/* Banner */}
-          <section 
+          <section
             className="gallery-hero-banner"
             style={{
               backgroundImage: `linear-gradient(rgba(35, 10, 42, 0.82), rgba(35, 10, 42, 0.88)), url(/images/events/${activeEvent.folder}/${activeEvent.coverIndex || 1}.jpeg)`
@@ -1057,8 +1057,8 @@ Thank you!`;
                   {activeEvent.description}
                 </p>
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="back-to-gallery-btn"
                 onClick={() => navigateTo('#gallery')}
               >
@@ -1102,7 +1102,7 @@ Thank you!`;
             {/* Story & Image */}
             <div className="about-page-hero-grid">
               <div className="about-page-image-col">
-                <div 
+                <div
                   className="about-page-photo"
                   onClick={() => setAboutZoomed('/images/about/about-page.png')}
                   style={{ margin: '0 auto' }}
@@ -1128,12 +1128,12 @@ Thank you!`;
                   A Nurturing Haven for <em>Curious Minds.</em>
                 </h2>
                 <p style={{ fontSize: '16px', lineHeight: 1.8, color: 'var(--muted)', margin: '0 0 14px 0' }}>
-                  Established under the aegis of the <strong>Manju Vijay Charitable Trust</strong>, 
-                  <strong> M. V. Scholars Pre School</strong> provides a compassionate, holistic, and joyful learning 
+                  Established under the aegis of the <strong>Manju Vijay Charitable Trust</strong>,
+                  <strong> M. V. Scholars Pre School</strong> provides a compassionate, holistic, and joyful learning
                   environment for children aged <strong>3 to 10 years</strong> (Pre-Nursery through 5th Grade).
                 </p>
                 <p style={{ fontSize: '16px', lineHeight: 1.8, color: 'var(--muted)', margin: '0 0 24px 0' }}>
-                  We believe early childhood and primary education shape a child's character for life. 
+                  We believe early childhood and primary education shape a child's character for life.
                   Our experienced teachers provide personal attention, fostering curiosity, creativity, strong moral values, and foundational academic confidence.
                 </p>
 
@@ -1218,8 +1218,8 @@ Thank you!`;
               <div className="principal-card">
                 <div className="principal-photo-col">
                   <div className="principal-photo-box">
-                    <img 
-                      src="/images/leadership/principal.jpg" 
+                    <img
+                      src="/images/leadership/principal.jpg"
                       alt="Kulvijay Singh Bhadauriya (Ravi Singh) - Principal & Founder"
                       className="principal-img"
                     />
@@ -1237,17 +1237,17 @@ Thank you!`;
                   <blockquote className="principal-quote">
                     At M. V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity.
                   </blockquote>
-                  
+
                   <div className="principal-bio">
                     <p>
-                      Welcome to <strong>M. V. Scholars Pre School</strong>. Founded under the aegis of the 
-                      <strong> Manju Vijay Charitable Trust</strong>, our institution was born out of a profound commitment 
+                      Welcome to <strong>M. V. Scholars Pre School</strong>. Founded under the aegis of the
+                      <strong> Manju Vijay Charitable Trust</strong>, our institution was born out of a profound commitment
                       to provide accessible, high-standard foundational and primary education to every child.
                     </p>
                     <p>
-                      We believe that a child’s early formative years from <strong>Pre-Nursery to 5th Grade</strong> (Ages 3 to 10) are the most crucial. 
-                      During these years, character is shaped, habits are formed, and the joy of lifelong learning is sparked. 
-                      Our dedicated team focuses on blending structured academics with playful discovery, sports, moral ethics, 
+                      We believe that a child’s early formative years from <strong>Pre-Nursery to 5th Grade</strong> (Ages 3 to 10) are the most crucial.
+                      During these years, character is shaped, habits are formed, and the joy of lifelong learning is sparked.
+                      Our dedicated team focuses on blending structured academics with playful discovery, sports, moral ethics,
                       and creative arts.
                     </p>
                     <p>
@@ -1383,7 +1383,7 @@ Thank you!`;
           {/* ABOUT (WITH USER's UPLOADED ABOUT IMAGE - NO BOX, SCROLL ZOOM IN & OUT) */}
           <section className="about section" id="about">
             <div className="about-image-wrapper">
-              <div 
+              <div
                 className="about-photo"
                 onClick={() => setAboutZoomed('/images/about/about.png')}
               >
@@ -1490,9 +1490,9 @@ Thank you!`;
             </div>
             <div className="activity-grid">
               {activities.map((a, i) => (
-                <motion.article 
-                  className={`activity activity-${i + 1}`} 
-                  key={a.title} 
+                <motion.article
+                  className={`activity activity-${i + 1}`}
+                  key={a.title}
                   whileHover={{ y: -6 }}
                 >
                   <div className="activity-icon">
@@ -1520,8 +1520,8 @@ Thank you!`;
               desktopCols={3}
               ariaLabel="Campus Facilities and Safety"
               renderItem={(f) => (
-                <div 
-                  className="facility-card" 
+                <div
+                  className="facility-card"
                   style={{ backgroundImage: `url(${f.bgImage})` }}
                 >
                   <div className="facility-icon-box">
@@ -1543,8 +1543,8 @@ Thank you!`;
             <div className="principal-card" style={{ maxWidth: '1050px', margin: '0 auto' }}>
               <div className="principal-photo-col">
                 <div className="principal-photo-box">
-                  <img 
-                    src="/images/leadership/principal.jpg" 
+                  <img
+                    src="/images/leadership/principal.jpg"
                     alt="Kulvijay Singh Bhadauriya (Ravi Singh) - Principal & Founder"
                     className="principal-img"
                   />
@@ -1562,7 +1562,7 @@ Thank you!`;
                 <blockquote className="principal-quote">
                   "At M. V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity."
                 </blockquote>
-                
+
                 <div className="principal-bio">
                   <p>
                     Established under the <strong>Manju Vijay Charitable Trust</strong>, M. V. Scholars Pre School is driven by a deep commitment to high-standard foundational education for children aged <strong>3 to 10 years</strong> (Pre-Nursery to 5th Grade).
@@ -1573,8 +1573,8 @@ Thank you!`;
                 </div>
 
                 <div style={{ marginTop: '22px' }}>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="nav-cta"
                     onClick={() => handleNavClick('about', '#about')}
                     style={{ border: 'none', cursor: 'pointer' }}
@@ -1593,9 +1593,9 @@ Thank you!`;
                 <div className="eyebrow">Memories in the Making</div>
                 <h2>Life at M. V. Scholars Pre School <em>Photo Albums.</em></h2>
               </div>
-              <button 
-                type="button" 
-                className="nav-cta" 
+              <button
+                type="button"
+                className="nav-cta"
                 onClick={() => navigateTo('#gallery')}
                 style={{ cursor: 'pointer', border: 'none' }}
               >
@@ -1609,8 +1609,8 @@ Thank you!`;
               desktopCols={4}
               ariaLabel="Photo Gallery Albums"
               renderItem={(evt) => (
-                <div 
-                  className="bvn-card" 
+                <div
+                  className="bvn-card"
                   key={evt.id}
                   onClick={() => navigateTo(`#gallery/${evt.id}`)}
                 >
@@ -1657,8 +1657,8 @@ Thank you!`;
                 </p>
               </div>
               <div className="feedback-cta-actions">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="feedback-open-btn"
                   onClick={() => {
                     setShowFeedbackForm(prev => !prev);
@@ -1667,10 +1667,10 @@ Thank you!`;
                 >
                   {showFeedbackForm ? '✕ Close Form' : '✍️ Write a Parent Review'}
                 </button>
-                <a 
-                  href={MAPS_URL} 
-                  target="_blank" 
-                  rel="noreferrer" 
+                <a
+                  href={MAPS_URL}
+                  target="_blank"
+                  rel="noreferrer"
                   className="google-review-pill-btn"
                   title="Rate M. V. Scholars Pre School on Google Maps"
                 >
@@ -1682,7 +1682,7 @@ Thank you!`;
             {/* COLLAPSIBLE INTERACTIVE FEEDBACK FORM */}
             <AnimatePresence>
               {showFeedbackForm && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0, y: -15 }}
                   animate={{ opacity: 1, height: 'auto', y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -15 }}
@@ -1695,9 +1695,9 @@ Thank you!`;
                         <h3>Share Your Parent Review & Feedback</h3>
                         <p>माता-पिता की समीक्षा — Share your child's learning journey and experience with our school</p>
                       </div>
-                      <button 
-                        type="button" 
-                        className="feedback-close-x-btn" 
+                      <button
+                        type="button"
+                        className="feedback-close-x-btn"
                         onClick={() => setShowFeedbackForm(false)}
                         aria-label="Close form"
                       >
@@ -1747,10 +1747,10 @@ Thank you!`;
                       <div className="form-row">
                         <div className="form-group">
                           <label htmlFor="revParentName">Parent's Full Name *</label>
-                          <input 
+                          <input
                             id="revParentName"
-                            type="text" 
-                            placeholder="e.g. Meenakshi Sharma" 
+                            type="text"
+                            placeholder="e.g. Meenakshi Sharma"
                             value={feedbackForm.parentName}
                             onChange={(e) => setFeedbackForm({ ...feedbackForm, parentName: e.target.value })}
                             required
@@ -1758,10 +1758,10 @@ Thank you!`;
                         </div>
                         <div className="form-group">
                           <label htmlFor="revChildInfo">Relationship & Child's Name *</label>
-                          <input 
+                          <input
                             id="revChildInfo"
-                            type="text" 
-                            placeholder="e.g. Mother of Aarav / Father of Ananya" 
+                            type="text"
+                            placeholder="e.g. Mother of Aarav / Father of Ananya"
                             value={feedbackForm.childInfo}
                             onChange={(e) => setFeedbackForm({ ...feedbackForm, childInfo: e.target.value })}
                             required
@@ -1772,7 +1772,7 @@ Thank you!`;
                       <div className="form-row">
                         <div className="form-group">
                           <label htmlFor="revClass">Child's Class / Grade *</label>
-                          <select 
+                          <select
                             id="revClass"
                             value={feedbackForm.selectedClass}
                             onChange={(e) => setFeedbackForm({ ...feedbackForm, selectedClass: e.target.value })}
@@ -1791,10 +1791,10 @@ Thank you!`;
                         </div>
                         <div className="form-group">
                           <label htmlFor="revPhone">Phone Number (Optional - for school verification)</label>
-                          <input 
+                          <input
                             id="revPhone"
-                            type="tel" 
-                            placeholder="e.g. 9876543210 (kept private)" 
+                            type="tel"
+                            placeholder="e.g. 9876543210 (kept private)"
                             value={feedbackForm.phone}
                             onChange={(e) => setFeedbackForm({ ...feedbackForm, phone: e.target.value })}
                           />
@@ -1803,9 +1803,9 @@ Thank you!`;
 
                       <div className="form-group">
                         <label htmlFor="revMessage">Your Honest Feedback & Experience *</label>
-                        <textarea 
+                        <textarea
                           id="revMessage"
-                          rows="4" 
+                          rows="4"
                           placeholder="How has your experience been with M. V. Scholars Pre School? (e.g. caring teachers, child's academic and emotional growth, campus safety, moral sanskars, festive celebrations)..."
                           value={feedbackForm.review}
                           onChange={(e) => setFeedbackForm({ ...feedbackForm, review: e.target.value })}
@@ -1814,16 +1814,16 @@ Thank you!`;
                       </div>
 
                       <div className="feedback-submit-buttons">
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="feedback-btn-whatsapp"
                           onClick={(e) => handleFeedbackSubmit(e, true)}
                         >
                           <MessageCircle size={18} />
                           <span>Submit & Send to School WhatsApp</span>
                         </button>
-                        <button 
-                          type="submit" 
+                        <button
+                          type="submit"
                           className="feedback-btn-site"
                         >
                           <Check size={18} />
@@ -1884,8 +1884,8 @@ Thank you!`;
 
             {reviewList.length > 6 && (
               <div className="view-more-reviews-wrapper">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="view-more-reviews-btn"
                   onClick={() => setShowAllReviews(!showAllReviews)}
                 >
@@ -1927,10 +1927,10 @@ Thank you!`;
                   <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="parentName">Parent's Full Name *</label>
-                      <input 
+                      <input
                         id="parentName"
-                        type="text" 
-                        placeholder="e.g. Rakesh Kumar" 
+                        type="text"
+                        placeholder="e.g. Rakesh Kumar"
                         value={enquiryForm.parentName}
                         onChange={(e) => setEnquiryForm({ ...enquiryForm, parentName: e.target.value })}
                         required
@@ -1938,10 +1938,10 @@ Thank you!`;
                     </div>
                     <div className="form-group">
                       <label htmlFor="phone">Phone / WhatsApp No. *</label>
-                      <input 
+                      <input
                         id="phone"
-                        type="tel" 
-                        placeholder="e.g. 9876543210" 
+                        type="tel"
+                        placeholder="e.g. 9876543210"
                         value={enquiryForm.phone}
                         onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
                         required
@@ -1952,17 +1952,17 @@ Thank you!`;
                   <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="childName">Child's Name & Age</label>
-                      <input 
+                      <input
                         id="childName"
-                        type="text" 
-                        placeholder="e.g. Aarav (4 Years)" 
+                        type="text"
+                        placeholder="e.g. Aarav (4 Years)"
                         value={enquiryForm.childName}
                         onChange={(e) => setEnquiryForm({ ...enquiryForm, childName: e.target.value })}
                       />
                     </div>
                     <div className="form-group">
                       <label htmlFor="selectedClass">Class Applying For</label>
-                      <select 
+                      <select
                         id="selectedClass"
                         value={enquiryForm.selectedClass}
                         onChange={(e) => setEnquiryForm({ ...enquiryForm, selectedClass: e.target.value })}
@@ -1986,9 +1986,9 @@ Thank you!`;
 
                   <div className="form-group">
                     <label htmlFor="message">Message / Questions (Optional)</label>
-                    <textarea 
+                    <textarea
                       id="message"
-                      rows="3" 
+                      rows="3"
                       placeholder="Ask about fee structure, timings, or request a campus walkthrough..."
                       value={enquiryForm.message}
                       onChange={(e) => setEnquiryForm({ ...enquiryForm, message: e.target.value })}
@@ -2102,9 +2102,9 @@ Thank you!`;
                     <strong>Campus Location</strong>
                     <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Tikri Kalan, New Delhi – 110041</div>
                   </div>
-                  <a 
-                    href={MAPS_URL} 
-                    target="_blank" 
+                  <a
+                    href={MAPS_URL}
+                    target="_blank"
                     rel="noreferrer"
                     className="map-header-btn"
                   >
@@ -2127,16 +2127,16 @@ Thank you!`;
       {/* FULLSCREEN LIGHTBOX FOR HIGH-RES VIEWING */}
       <AnimatePresence>
         {lightboxIndex !== null && activeEvent && (
-          <div 
+          <div
             className="lightbox-modal"
             onClick={() => setLightboxIndex(null)}
           >
-            <div 
+            <div
               className="lightbox-box"
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="lightbox-close-btn"
                 onClick={() => setLightboxIndex(null)}
                 aria-label="Close photo"
@@ -2144,8 +2144,8 @@ Thank you!`;
                 <X size={32} />
               </button>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="lightbox-nav-btn lightbox-prev"
                 onClick={handlePrevPhoto}
                 aria-label="Previous photo"
@@ -2164,8 +2164,8 @@ Thank you!`;
                 {activeEvent.title} — Photo {lightboxIndex + 1}
               </div>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="lightbox-nav-btn lightbox-next"
                 onClick={handleNextPhoto}
                 aria-label="Next photo"
@@ -2177,13 +2177,13 @@ Thank you!`;
         )}
 
         {aboutZoomed && (
-          <div 
+          <div
             className="lightbox-modal"
             onClick={() => setAboutZoomed(null)}
           >
             <div className="lightbox-box" onClick={(e) => e.stopPropagation()}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="lightbox-close-btn"
                 onClick={() => setAboutZoomed(null)}
                 aria-label="Close zoomed image"
@@ -2223,11 +2223,11 @@ Thank you!`;
       </footer>
 
       {/* FLOATING WHATSAPP BUTTON (ALL PAGES) */}
-      <a 
-        className="floating-whatsapp-btn" 
-        href={whatsapp} 
-        target="_blank" 
-        rel="noreferrer" 
+      <a
+        className="floating-whatsapp-btn"
+        href={whatsapp}
+        target="_blank"
+        rel="noreferrer"
         aria-label="WhatsApp admission enquiry"
       >
         <span className="whatsapp-pulse-dot"></span>
