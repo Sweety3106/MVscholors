@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mvscholars.vercel.app/sitemap.xml
+Sitemap: https://mvscholors.vercel.app/sitemap.xml
