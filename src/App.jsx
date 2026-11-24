@@ -487,8 +487,8 @@ function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const clean = parsed.filter(r => 
-            !r.name.toLowerCase().includes('suresh') && 
+          const clean = parsed.filter(r =>
+            !r.name.toLowerCase().includes('suresh') &&
             !r.name.toLowerCase().includes('health check') &&
             !r.name.toLowerCase().includes('test')
           );
@@ -522,31 +522,28 @@ function App() {
     }
   };
 
-  const isMockOrTest = (name = '', text = '') => {
+  const isTestOnly = (name = '', text = '') => {
     const n = name.toLowerCase();
     const t = text.toLowerCase();
     return (
       n.includes('suresh') ||
       n.includes('health check') ||
       n.includes('test') ||
-      n.includes('pooja sharma') ||
-      n.includes('rajesh kumar') ||
-      n.includes('sunita yadav') ||
       t.includes('health check')
     );
   };
 
   // Automatically fetch all live reviews from Google Sheet on page load
   useEffect(() => {
-    // Clean up any test/mock reviews in localStorage
+    // Clean up any test reviews in localStorage
     try {
       const saved = localStorage.getItem('mvsps_parent_reviews');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const filtered = parsed.filter(r => !isMockOrTest(r.name, r.text));
+        const filtered = parsed.filter(r => !isTestOnly(r.name, r.text));
         localStorage.setItem('mvsps_parent_reviews', JSON.stringify(filtered));
       }
-    } catch (e) {}
+    } catch (e) { }
 
     if (!FEEDBACK_SHEET_URL) return;
     let isMounted = true;
@@ -557,17 +554,17 @@ function App() {
       .then((data) => {
         if (!isMounted) return;
         if (data && data.result === 'success' && Array.isArray(data.reviews)) {
-          // Filter out any mock/test reviews
+          // Filter out test reviews
           const validSheetReviews = data.reviews.filter(
-            (sheetRev) => !isMockOrTest(sheetRev.name, sheetRev.text)
+            (sheetRev) => !isTestOnly(sheetRev.name, sheetRev.text)
           );
 
           setReviewList(() => {
             const localSaved = JSON.parse(localStorage.getItem('mvsps_parent_reviews') || '[]');
-            const cleanLocal = localSaved.filter(r => !isMockOrTest(r.name, r.text));
+            const cleanLocal = localSaved.filter(r => !isTestOnly(r.name, r.text));
             const combined = [...cleanLocal];
 
-            // Add sheet reviews if not already present in localSaved
+            // Add sheet reviews (e.g. Shubhi Singh)
             validSheetReviews.forEach((sheetRev) => {
               const exists = combined.some(
                 (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() &&
@@ -575,6 +572,14 @@ function App() {
               );
               if (!exists) {
                 combined.push(sheetRev);
+              }
+            });
+
+            // Append base testimonials (Pooja Sharma, Rajesh Kumar, Sunita Yadav)
+            testimonials.forEach((baseRev) => {
+              const exists = combined.some((c) => c.name.toLowerCase() === baseRev.name.toLowerCase());
+              if (!exists) {
+                combined.push(baseRev);
               }
             });
 
