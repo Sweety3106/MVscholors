@@ -1,4 +1,4 @@
-# 🏫 M.V. Scholars Pre School
+# 🏫 M. V. Scholars Pre School
 
 > *"ला तेरे लाल को इंसान बना दूँ / दुनिया पूजे इतना महान बना दूँ"*  
 > **Where strong foundations build bright futures.**
@@ -9,9 +9,9 @@
 
 ---
 
-## 🌟 About M.V. Scholars Pre School
+## 🌟 About M. V. Scholars Pre School
 
-Established under the benevolent aegis of the **Manju Vijay Charitable Trust**, **M.V. Scholars Pre School** is a nurturing, joyful, and value-centric educational institution situated in **Tikri Kalan, New Delhi**. 
+Established under the benevolent aegis of the **Manju Vijay Charitable Trust**, **M. V. Scholars Pre School** is a nurturing, joyful, and value-centric educational institution situated in **Tikri Kalan, New Delhi**. 
 
 We cater to young scholars aged **3 to 10 years** — from early childhood discovery in **Pre-Nursery and Kindergarten** through structured academic excellence in **Classes 1st to 5th**. 
 
@@ -35,7 +35,7 @@ We believe that early childhood is where character takes root. Our mission is to
 
 ## 🎓 Academic Wings & Curriculum
 
-M.V. Scholars Pre School provides a thoughtfully designed curriculum tailored for children from ages 3 to 10 years:
+M. V. Scholars Pre School provides a thoughtfully designed curriculum tailored for children from ages 3 to 10 years:
 
 ### 1. 🧸 Kindergarten & Foundational Wing (Ages 3 – 5 Years)
 *Activity-based, joyful early discovery:*
@@ -74,7 +74,7 @@ The school premises are crafted to ensure total safety, health, and holistic sti
 
 ---
 
-## 📸 Life at M.V. Scholars Pre School (Events & Co-Curriculars)
+## 📸 Life at M. V. Scholars Pre School (Events & Co-Curriculars)
 
 Our students actively celebrate the vibrant spirit of Indian festivals and educational excursions:
 - 🦚 **Janmashtami Celebrations** — Traditional attire, Krishna-Radha enactments, and cultural dance.
@@ -91,7 +91,7 @@ Our students actively celebrate the vibrant spirit of Indian festivals and educa
 - **Founder & Principal:** Kulvijay Singh Bhadauriya *(Ravi Singh)*
 - **Management:** Managing Trustee, *Manju Vijay Charitable Trust*
 
-> *"At M.V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity."*
+> *"At M. V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity."*
 
 ---
 
@@ -99,7 +99,7 @@ Our students actively celebrate the vibrant spirit of Indian festivals and educa
 
 | Detail | Information |
 | :--- | :--- |
-| **School Name** | M.V. Scholars Pre School |
+| **School Name** | M. V. Scholars Pre School |
 | **Trust** | Manju Vijay Charitable Trust |
 | **Address** | Plot No. 95/4, Baba Haridass Colony, Near CNC Hospital, Tikri Kalan, New Delhi – 110041 |
 | **Timings** | 8:00 AM – 1:00 PM (Monday to Saturday) |

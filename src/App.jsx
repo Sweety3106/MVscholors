@@ -10,7 +10,7 @@ import {
 const PHONE = '918750994677';
 const EMAIL = 'mvscholars7@gmail.com';
 const MAPS_URL = 'https://maps.app.goo.gl/fUpGj39ZQUtdzi2a7?g_st=aw';
-const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M.V. Scholars Pre School! I would like to enquire about admissions.')}`;
+const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M. V. Scholars Pre School! I would like to enquire about admissions.')}`;
 
 const activities = [
   { icon: BookOpen, title: 'Foundational Learning', text: 'Building early literacy, numeracy, and curiosity through guided discovery and playful activities.' },
@@ -65,7 +65,7 @@ const testimonials = [
     name: 'Pooja Sharma',
     child: 'Mother of Aarav (UKG)',
     avatar: 'P',
-    text: 'M.V. Scholars Pre School has given my child the best start. The teachers give individual attention to every student, and the balance of academics, moral values, and festive activities is heartwarming.'
+    text: 'M. V. Scholars Pre School has given my child the best start. The teachers give individual attention to every student, and the balance of academics, moral values, and festive activities is heartwarming.'
   },
   {
     name: 'Rajesh Kumar',
@@ -366,7 +366,7 @@ function BrandLogo() {
   return (
     <img
       src={sources[srcIndex]}
-      alt="M.V. Scholars Pre School Logo"
+      alt="M. V. Scholars Pre School Logo"
       className="brand-logo-img"
       onError={() => setSrcIndex((prev) => prev + 1)}
     />
@@ -484,7 +484,7 @@ function App() {
       alert('Please fill in your name and phone number so our admissions team can reach you.');
       return;
     }
-    const text = `*New Admission Enquiry - M.V. Scholars Pre School*
+    const text = `*New Admission Enquiry - M. V. Scholars Pre School*
 👤 *Parent Name:* ${enquiryForm.parentName}
 📱 *Phone:* ${enquiryForm.phone}
 🧒 *Child Name:* ${enquiryForm.childName || 'Not specified'} (${enquiryForm.childAge ? `${enquiryForm.childAge} yrs` : 'Age not specified'})
@@ -502,7 +502,7 @@ function App() {
       return;
     }
     const subject = `Admission Enquiry - ${enquiryForm.parentName} (${enquiryForm.selectedClass})`;
-    const body = `Hello M.V. Scholars Pre School Admissions Desk,
+    const body = `Hello M. V. Scholars Pre School Admissions Desk,
 
 I would like to enquire about admission:
 - Parent Name: ${enquiryForm.parentName}
@@ -591,7 +591,7 @@ Thank you!`;
         <a className="brand" href="#home" onClick={() => handleNavClick('home', '#home')}>
           <BrandLogo />
           <div className="brand-text">
-            <strong>M.V. Scholars Pre School</strong>
+            <strong>M. V. Scholars Pre School</strong>
             <small>PRE-NURSERY TO 5TH</small>
             <div className="brand-slogan">
               <span>ला तेरे लाल को इंसान बना दूँ</span>
@@ -689,7 +689,7 @@ Thank you!`;
                 <div className="mobile-drawer-brand">
                   <BrandLogo />
                   <div>
-                    <strong>M.V. Scholars Pre School</strong>
+                    <strong>M. V. Scholars Pre School</strong>
                     <small>PRE-NURSERY TO 5TH</small>
                   </div>
                 </div>
@@ -924,12 +924,12 @@ Thank you!`;
                   <SafeImage
                     src="/images/about/about-page.png"
                     fallback="/images/about/about-page.jpg"
-                    alt="Students reading at M.V. Scholars Pre School"
+                    alt="Students reading at M. V. Scholars Pre School"
                   />
                 </div>
                 <div style={{ textAlign: 'center', marginTop: '12px' }}>
                   <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 600 }}>
-                    Little scholars reading together at M.V. Scholars Pre School
+                    Little scholars reading together at M. V. Scholars Pre School
                   </span>
                 </div>
               </div>
@@ -943,7 +943,7 @@ Thank you!`;
                 </h2>
                 <p style={{ fontSize: '16px', lineHeight: 1.8, color: 'var(--muted)', margin: '0 0 14px 0' }}>
                   Established under the aegis of the <strong>Manju Vijay Charitable Trust</strong>, 
-                  <strong> M.V. Scholars Pre School</strong> provides a compassionate, holistic, and joyful learning 
+                  <strong> M. V. Scholars Pre School</strong> provides a compassionate, holistic, and joyful learning 
                   environment for children aged <strong>3 to 10 years</strong> (Pre-Nursery through 5th Grade).
                 </p>
                 <p style={{ fontSize: '16px', lineHeight: 1.8, color: 'var(--muted)', margin: '0 0 24px 0' }}>
@@ -1041,7 +1041,7 @@ Thank you!`;
                   <div className="principal-nameplate">
                     <h3>Kulvijay Singh Bhadauriya</h3>
                     <div className="alias-name">(Ravi Singh)</div>
-                    <p className="principal-title">Principal & Founder, M.V. Scholars Pre School</p>
+                    <p className="principal-title">Principal & Founder, M. V. Scholars Pre School</p>
                     <p className="trust-title">Managing Trustee, Manju Vijay Charitable Trust</p>
                   </div>
                 </div>
@@ -1049,12 +1049,12 @@ Thank you!`;
                 <div className="principal-message-col">
                   <div className="quote-mark">“</div>
                   <blockquote className="principal-quote">
-                    At M.V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity.
+                    At M. V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity.
                   </blockquote>
                   
                   <div className="principal-bio">
                     <p>
-                      Welcome to <strong>M.V. Scholars Pre School</strong>. Founded under the aegis of the 
+                      Welcome to <strong>M. V. Scholars Pre School</strong>. Founded under the aegis of the 
                       <strong> Manju Vijay Charitable Trust</strong>, our institution was born out of a profound commitment 
                       to provide accessible, high-standard foundational and primary education to every child.
                     </p>
@@ -1141,7 +1141,7 @@ Thank you!`;
                 <ScrollZoomImage
                   src="/images/hero/hero.png"
                   fallback="https://images.unsplash.com/photo-1503459439306-3d9b5f6b4a4b?auto=format&fit=crop&w=1000&q=90"
-                  alt="M.V. Scholars Pre School student enjoying learning"
+                  alt="M. V. Scholars Pre School student enjoying learning"
                   overflowHidden={true}
                 />
               </div>
@@ -1156,7 +1156,7 @@ Thank you!`;
           <section className="ticker" aria-label="School Highlights">
             <div className="ticker-marquee">
               <div className="ticker-track">
-                <span>M.V. SCHOLARS PRE SCHOOL</span>
+                <span>M. V. SCHOLARS PRE SCHOOL</span>
                 <i>✦</i>
                 <span>PRE-NURSERY TO 5TH</span>
                 <i>✦</i>
@@ -1174,7 +1174,7 @@ Thank you!`;
                 <i>✦</i>
               </div>
               <div className="ticker-track" aria-hidden="true">
-                <span>M.V. SCHOLARS PRE SCHOOL</span>
+                <span>M. V. SCHOLARS PRE SCHOOL</span>
                 <i>✦</i>
                 <span>PRE-NURSERY TO 5TH</span>
                 <i>✦</i>
@@ -1204,17 +1204,17 @@ Thank you!`;
                 <ScrollZoomImage
                   src="/images/about/about.png"
                   fallback="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1000&q=85"
-                  alt="Students learning at M.V. Scholars Pre School"
+                  alt="Students learning at M. V. Scholars Pre School"
                   overflowHidden={false}
                 />
               </div>
             </div>
 
             <div className="about-text">
-              <div className="eyebrow">Welcome to M.V. Scholars Pre School</div>
+              <div className="eyebrow">Welcome to M. V. Scholars Pre School</div>
               <h2>Where strong foundations<br />build <em>bright futures.</em></h2>
               <p>
-                Managed under the aegis of the <strong>Manju Vijay Charitable Trust</strong>, M.V. Scholars Pre School provides a compassionate, holistic, and joyful learning environment for children aged 3 to 10 years.
+                Managed under the aegis of the <strong>Manju Vijay Charitable Trust</strong>, M. V. Scholars Pre School provides a compassionate, holistic, and joyful learning environment for children aged 3 to 10 years.
               </p>
               <p>
                 From early preschool discovery in Pre-Nursery and Kindergarten to structured academic foundations in Classes 1st through 5th, we ensure every child receives personal attention, moral values, and creative encouragement.
@@ -1366,7 +1366,7 @@ Thank you!`;
                 <div className="principal-nameplate">
                   <h3>Kulvijay Singh Bhadauriya</h3>
                   <div className="alias-name">(Ravi Singh)</div>
-                  <p className="principal-title">Principal & Founder, M.V. Scholars Pre School</p>
+                  <p className="principal-title">Principal & Founder, M. V. Scholars Pre School</p>
                   <p className="trust-title">Managing Trustee, Manju Vijay Charitable Trust</p>
                 </div>
               </div>
@@ -1374,12 +1374,12 @@ Thank you!`;
               <div className="principal-message-col">
                 <div className="quote-mark">“</div>
                 <blockquote className="principal-quote">
-                  "At M.V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity."
+                  "At M. V. Scholars Pre School, our mission is to create a joyful, compassionate, and empowering environment where children don't just study—they thrive with wonder, respect, and boundless curiosity."
                 </blockquote>
                 
                 <div className="principal-bio">
                   <p>
-                    Established under the <strong>Manju Vijay Charitable Trust</strong>, M.V. Scholars Pre School is driven by a deep commitment to high-standard foundational education for children aged <strong>3 to 10 years</strong> (Pre-Nursery to 5th Grade).
+                    Established under the <strong>Manju Vijay Charitable Trust</strong>, M. V. Scholars Pre School is driven by a deep commitment to high-standard foundational education for children aged <strong>3 to 10 years</strong> (Pre-Nursery to 5th Grade).
                   </p>
                   <p>
                     We provide personalized mentorship, moral values, and an interactive curriculum that helps every young scholar blossom into a confident, empathetic leader of tomorrow.
@@ -1405,7 +1405,7 @@ Thank you!`;
             <div className="gallery-heading">
               <div>
                 <div className="eyebrow">Memories in the Making</div>
-                <h2>Life at M.V. Scholars Pre School <em>Photo Albums.</em></h2>
+                <h2>Life at M. V. Scholars Pre School <em>Photo Albums.</em></h2>
               </div>
               <button 
                 type="button" 
@@ -1455,7 +1455,7 @@ Thank you!`;
           <section className="testimonials-section" id="testimonials">
             <div className="center-heading">
               <div className="eyebrow">Loved by Families</div>
-              <h2>What Parents Say About <em>M.V. Scholars Pre School</em></h2>
+              <h2>What Parents Say About <em>M. V. Scholars Pre School</em></h2>
               <p>Hear from families who have experienced our nurturing teachers and joyful learning culture.</p>
             </div>
 
@@ -1695,7 +1695,7 @@ Thank you!`;
                   </a>
                 </div>
                 <iframe
-                  title="M.V. Scholars Pre School Location Map"
+                  title="M. V. Scholars Pre School Location Map"
                   src="https://maps.google.com/maps?q=Plot+No.+95%2F4%2C+Baba+Haridass+Colony%2C+near+CNC+Hospital%2C+Tikri+Kalan%2C+New+Delhi+110041&t=&z=15&ie=UTF8&iwloc=&output=embed"
                   className="map-iframe-box"
                   loading="lazy"
@@ -1777,11 +1777,11 @@ Thank you!`;
               <SafeImage
                 src={typeof aboutZoomed === 'string' ? aboutZoomed : '/images/about/about-page.png'}
                 fallback="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1000&q=85"
-                alt="Students at M.V. Scholars Pre School"
+                alt="Students at M. V. Scholars Pre School"
               />
 
               <div className="lightbox-caption">
-                M.V. Scholars Pre School — Click anywhere or ✕ to close
+                M. V. Scholars Pre School — Click anywhere or ✕ to close
               </div>
             </div>
           </div>
@@ -1792,7 +1792,7 @@ Thank you!`;
         <a className="brand" href="#home" onClick={() => navigateTo('#home')}>
           <BrandLogo />
           <div className="brand-text">
-            <strong>M.V. Scholars Pre School</strong>
+            <strong>M. V. Scholars Pre School</strong>
             <small>RUN BY MANJU VIJAY CHARITABLE TRUST</small>
             <div className="brand-slogan">
               <span>ला तेरे लाल को इंसान बना दूँ</span>
@@ -1801,7 +1801,7 @@ Thank you!`;
           </div>
         </a>
         <span>
-          © {new Date().getFullYear()} M.V. Scholars Pre School. Run by Manju Vijay Charitable Trust.
+          © {new Date().getFullYear()} M. V. Scholars Pre School. Run by Manju Vijay Charitable Trust.
         </span>
       </footer>
 
