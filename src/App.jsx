@@ -12,7 +12,7 @@ const EMAIL = 'mvscholars7@gmail.com';
 const MAPS_URL = 'https://maps.app.goo.gl/fUpGj39ZQUtdzi2a7?g_st=aw';
 const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M. V. Scholars Pre School! I would like to enquire about admissions.')}`;
 // Google Sheets Webhook URL for saving parent reviews automatically
-const FEEDBACK_SHEET_URL = import.meta.env.VITE_FEEDBACK_SHEET_URL || '';
+const FEEDBACK_SHEET_URL = import.meta.env.VITE_FEEDBACK_SHEET_URL || 'https://script.google.com/macros/s/AKfycbzRvhDSnV6e_yJPQIflx8vzse376kQztxYDF3NjUPu_OZUjcSaW0ReUS6u5-buW2jZkKA/exec';
 
 const activities = [
   { icon: BookOpen, title: 'Foundational Learning', text: 'Building early literacy, numeracy, and curiosity through guided discovery and playful activities.' },
