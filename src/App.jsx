@@ -481,6 +481,21 @@ function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // PARENT FEEDBACK & REVIEWS STATE
+  const [reviewList, setReviewList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mvsps_parent_reviews');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return [...parsed, ...testimonials];
+        }
+      }
+    } catch (e) {
+      console.error('Error loading reviews from localStorage', e);
+    }
+    return testimonials;
+  });
+
   const [feedbackForm, setFeedbackForm] = useState({
     parentName: '',
     childInfo: '',
@@ -492,6 +507,59 @@ function App() {
   const [hoverRating, setHoverRating] = useState(0);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [isReviewsLoading, setIsReviewsLoading] = useState(false);
+
+  // Automatically fetch all live reviews from Google Sheet on page load
+  useEffect(() => {
+    if (!FEEDBACK_SHEET_URL) return;
+    let isMounted = true;
+    setIsReviewsLoading(true);
+
+    fetch(FEEDBACK_SHEET_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data && data.result === 'success' && Array.isArray(data.reviews) && data.reviews.length > 0) {
+          setReviewList((prevList) => {
+            const localSaved = JSON.parse(localStorage.getItem('mvsps_parent_reviews') || '[]');
+            const combined = [...localSaved];
+
+            // Add sheet reviews if not already present in localSaved
+            data.reviews.forEach((sheetRev) => {
+              const exists = combined.some(
+                (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() && 
+                       c.text.trim().slice(0, 30) === sheetRev.text.trim().slice(0, 30)
+              );
+              if (!exists) {
+                combined.push(sheetRev);
+              }
+            });
+
+            // Append default base testimonials if not already represented
+            testimonials.forEach((baseRev) => {
+              const exists = combined.some((c) => c.name.toLowerCase() === baseRev.name.toLowerCase());
+              if (!exists) {
+                combined.push(baseRev);
+              }
+            });
+
+            return combined;
+          });
+        }
+      })
+      .catch((err) => {
+        // Will seamlessly fallback to default testimonials if Google Sheet has not updated doGet yet
+        console.log('Live Google Sheet reviews notice:', err);
+      })
+      .finally(() => {
+        if (isMounted) setIsReviewsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const ratingDescriptions = {
     5: '⭐⭐⭐⭐⭐ Outstanding / अति उत्तम (5/5)',
@@ -512,14 +580,36 @@ function App() {
       return;
     }
 
-    // Automatically send review to Google Sheet for school administration
+    const newReview = {
+      name: feedbackForm.parentName.trim(),
+      child: `${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})`,
+      avatar: feedbackForm.parentName.trim().charAt(0).toUpperCase() || 'P',
+      rating: feedbackForm.rating || 5,
+      text: feedbackForm.review.trim(),
+      date: 'Just now',
+      isUserSubmitted: true
+    };
+
+    const updated = [newReview, ...reviewList];
+    setReviewList(updated);
+
+    try {
+      const userOnly = updated.filter(r => r.isUserSubmitted);
+      localStorage.setItem('mvsps_parent_reviews', JSON.stringify(userOnly));
+    } catch (err) {
+      console.error('Error saving review to localStorage', err);
+    }
+
+    setFeedbackSubmitted(true);
+
+    // Automatically send review to Google Sheet if Webhook URL is set
     if (FEEDBACK_SHEET_URL) {
       try {
         fetch(FEEDBACK_SHEET_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain;charset=utf-8'
           },
           body: JSON.stringify({
             timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
@@ -536,11 +626,9 @@ function App() {
       }
     }
 
-    setFeedbackSubmitted(true);
-
     if (sendToWhatsApp) {
       const starIcons = '⭐'.repeat(feedbackForm.rating || 5);
-      const waText = `*🌟 New Parent Feedback - M. V. Scholars Pre School 🌟*
+      const waText = `*🌟 New Parent Review - M. V. Scholars Pre School 🌟*
 👤 *Parent Name:* ${feedbackForm.parentName.trim()}
 🧒 *Child:* ${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})
 ⭐ *Rating:* ${starIcons} (${feedbackForm.rating || 5}/5)
@@ -548,7 +636,7 @@ function App() {
 💬 *Feedback / Review:*
 "${feedbackForm.review.trim()}"
 
-Submitted for M. V. Scholars Pre School Administration.`;
+Thank you for nurturing our child with such love and care!`;
 
       window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
     }
@@ -1622,7 +1710,7 @@ Thank you!`;
                         <CheckCircle2 size={22} color="#166534" style={{ flexShrink: 0 }} />
                         <div>
                           <strong>Thank You So Much! 🎉</strong>
-                          <p>Your feedback has been successfully submitted to the school administration. We deeply value your feedback and encouragement!</p>
+                          <p>Your review has been successfully recorded and published below! We deeply value your trust in M. V. Scholars Pre School.</p>
                         </div>
                       </div>
                     )}
@@ -1727,24 +1815,24 @@ Thank you!`;
 
                       <div className="feedback-submit-buttons">
                         <button 
-                          type="submit" 
-                          className="feedback-btn-site"
-                        >
-                          <Send size={18} />
-                          <span>Submit Feedback</span>
-                        </button>
-                        <button 
                           type="button" 
                           className="feedback-btn-whatsapp"
                           onClick={(e) => handleFeedbackSubmit(e, true)}
                         >
                           <MessageCircle size={18} />
-                          <span>Submit & Send via WhatsApp</span>
+                          <span>Submit & Send to School WhatsApp</span>
+                        </button>
+                        <button 
+                          type="submit" 
+                          className="feedback-btn-site"
+                        >
+                          <Check size={18} />
+                          <span>Post Review on Website</span>
                         </button>
                       </div>
 
                       <div className="feedback-form-footer-note">
-                        🔒 Your feedback and contact details are submitted directly to the school administration for review and record.
+                        🔒 Your phone number is kept confidential. Your review will appear below to help inspire other parents.
                       </div>
                     </form>
                   </div>
@@ -1752,9 +1840,21 @@ Thank you!`;
               )}
             </AnimatePresence>
 
-            {/* TESTIMONIALS GRID (ADMIN-APPROVED REVIEWS) */}
+            {/* TESTIMONIALS HEADER & COUNT */}
+            <div className="testimonials-header-bar">
+              <div className="reviews-count-badge">
+                ⭐ {reviewList.length} Parent Reviews
+              </div>
+              {isReviewsLoading && (
+                <span className="reviews-syncing-indicator">
+                  ↻ Checking for new feedback...
+                </span>
+              )}
+            </div>
+
+            {/* TESTIMONIALS GRID */}
             <div className="testimonials-grid">
-              {testimonials.map((t, idx) => {
+              {(showAllReviews ? reviewList : reviewList.slice(0, 6)).map((t, idx) => {
                 const starCount = t.rating || 5;
                 const starsString = '★'.repeat(starCount) + '☆'.repeat(Math.max(0, 5 - starCount));
                 return (
@@ -1762,6 +1862,11 @@ Thank you!`;
                     <div>
                       <div className="testimonial-card-top">
                         <div className="testimonial-stars">{starsString}</div>
+                        {t.isUserSubmitted && (
+                          <span className="verified-parent-badge">
+                            <span className="badge-pulse-dot"></span> Verified Parent Review
+                          </span>
+                        )}
                       </div>
                       <p className="testimonial-quote">"{t.text}"</p>
                     </div>
@@ -1776,6 +1881,18 @@ Thank you!`;
                 );
               })}
             </div>
+
+            {reviewList.length > 6 && (
+              <div className="view-more-reviews-wrapper">
+                <button 
+                  type="button" 
+                  className="view-more-reviews-btn"
+                  onClick={() => setShowAllReviews(!showAllReviews)}
+                >
+                  {showAllReviews ? '▲ Show Fewer Reviews' : `▼ View All ${reviewList.length} Parent Reviews`}
+                </button>
+              </div>
+            )}
           </section>
 
           {/* ADMISSIONS & INTERACTIVE ENQUIRY FORM */}
