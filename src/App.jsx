@@ -478,6 +478,101 @@ function App() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
 
+  // PARENT FEEDBACK & REVIEWS STATE
+  const [reviewList, setReviewList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mvsps_parent_reviews');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return [...parsed, ...testimonials];
+        }
+      }
+    } catch (e) {
+      console.error('Error loading reviews from localStorage', e);
+    }
+    return testimonials;
+  });
+
+  const [feedbackForm, setFeedbackForm] = useState({
+    parentName: '',
+    childInfo: '',
+    selectedClass: 'Pre-Nursery',
+    rating: 5,
+    phone: '',
+    review: ''
+  });
+  const [hoverRating, setHoverRating] = useState(0);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+
+  const ratingDescriptions = {
+    5: '⭐⭐⭐⭐⭐ Outstanding / अति उत्तम (5/5)',
+    4: '⭐⭐⭐⭐ Very Good / बहुत अच्छा (4/5)',
+    3: '⭐⭐⭐ Good / अच्छा (3/5)',
+    2: '⭐⭐ Fair / सामान्य (2/5)',
+    1: '⭐ Needs Improvement / सुधार आवश्यक (1/5)',
+  };
+
+  const handleFeedbackSubmit = (e, sendToWhatsApp = false) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!feedbackForm.parentName.trim()) {
+      alert("Please enter the parent's full name.");
+      return;
+    }
+    if (!feedbackForm.review.trim()) {
+      alert('Please share your valuable feedback or experience.');
+      return;
+    }
+
+    const newReview = {
+      name: feedbackForm.parentName.trim(),
+      child: `${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})`,
+      avatar: feedbackForm.parentName.trim().charAt(0).toUpperCase() || 'P',
+      rating: feedbackForm.rating || 5,
+      text: feedbackForm.review.trim(),
+      date: 'Just now',
+      isUserSubmitted: true
+    };
+
+    const updated = [newReview, ...reviewList];
+    setReviewList(updated);
+
+    try {
+      const userOnly = updated.filter(r => r.isUserSubmitted);
+      localStorage.setItem('mvsps_parent_reviews', JSON.stringify(userOnly));
+    } catch (err) {
+      console.error('Error saving review to localStorage', err);
+    }
+
+    setFeedbackSubmitted(true);
+
+    if (sendToWhatsApp) {
+      const starIcons = '⭐'.repeat(feedbackForm.rating || 5);
+      const waText = `*🌟 New Parent Review - M. V. Scholars Pre School 🌟*
+👤 *Parent Name:* ${feedbackForm.parentName.trim()}
+🧒 *Child:* ${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})
+⭐ *Rating:* ${starIcons} (${feedbackForm.rating || 5}/5)
+📱 *Phone:* ${feedbackForm.phone.trim() || 'Not specified'}
+💬 *Feedback / Review:*
+"${feedbackForm.review.trim()}"
+
+Thank you for nurturing our child with such love and care!`;
+
+      window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
+    }
+
+    // Reset form after submission
+    setFeedbackForm({
+      parentName: '',
+      childInfo: '',
+      selectedClass: 'Pre-Nursery',
+      rating: 5,
+      phone: '',
+      review: ''
+    });
+  };
+
   const handleWhatsAppSubmit = (e) => {
     e.preventDefault();
     if (!enquiryForm.parentName.trim() || !enquiryForm.phone.trim()) {
@@ -529,6 +624,11 @@ Thank you!`;
         setActiveNav('classes');
       } else if (hash === '#admissions') {
         setActiveNav('admissions');
+      } else if (hash === '#testimonials' || hash === '#feedback' || hash === '#reviews') {
+        setActiveNav('testimonials');
+        if (hash === '#feedback') {
+          setShowFeedbackForm(true);
+        }
       } else if (hash === '#contact') {
         setActiveNav('contact');
       } else {
@@ -745,6 +845,13 @@ Thank you!`;
                   className={activeNav === 'facilities' ? 'active' : ''}
                 >
                   <span className="drawer-icon">🛡️</span> Campus Facilities
+                </a>
+                <a 
+                  href="#testimonials" 
+                  onClick={() => handleNavClick('testimonials', '#testimonials')}
+                  className={activeNav === 'testimonials' ? 'active' : ''}
+                >
+                  <span className="drawer-icon">⭐</span> Parent Reviews & Feedback
                 </a>
                 <a 
                   href="#admissions"
@@ -1451,30 +1558,237 @@ Thank you!`;
             />
           </section>
 
-          {/* PARENT TESTIMONIALS */}
+          {/* PARENT TESTIMONIALS & FEEDBACK SECTION */}
           <section className="testimonials-section" id="testimonials">
             <div className="center-heading">
               <div className="eyebrow">Loved by Families</div>
               <h2>What Parents Say About <em>M. V. Scholars Pre School</em></h2>
-              <p>Hear from families who have experienced our nurturing teachers and joyful learning culture.</p>
+              <p>Hear from families who have experienced our nurturing teachers, joyful classrooms, and value-rich education.</p>
             </div>
 
-            <div className="testimonials-grid">
-              {testimonials.map((t) => (
-                <div className="testimonial-card" key={t.name}>
-                  <div>
-                    <div className="testimonial-stars">★★★★★</div>
-                    <p className="testimonial-quote">"{t.text}"</p>
+            {/* PARENT FEEDBACK CALL TO ACTION */}
+            <div className="parent-feedback-cta-card">
+              <div className="feedback-cta-content">
+                <div className="feedback-badge">
+                  <Sparkles size={14} /> Parent Voice / अभिभावकों का अनुभव
+                </div>
+                <h3>Are you an M. V. Scholars Parent?</h3>
+                <p>
+                  Your feedback helps us continuously grow and guides other parents in our community who are seeking a warm, safe, and nurturing foundation for their children.
+                </p>
+              </div>
+              <div className="feedback-cta-actions">
+                <button 
+                  type="button" 
+                  className="feedback-open-btn"
+                  onClick={() => {
+                    setShowFeedbackForm(prev => !prev);
+                    setFeedbackSubmitted(false);
+                  }}
+                >
+                  {showFeedbackForm ? '✕ Close Form' : '✍️ Write a Parent Review'}
+                </button>
+                <a 
+                  href={MAPS_URL} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="google-review-pill-btn"
+                  title="Rate M. V. Scholars Pre School on Google Maps"
+                >
+                  <span className="google-g-icon">G</span> Rate on Google Maps
+                </a>
+              </div>
+            </div>
+
+            {/* COLLAPSIBLE INTERACTIVE FEEDBACK FORM */}
+            <AnimatePresence>
+              {showFeedbackForm && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0, y: -15 }}
+                  animate={{ opacity: 1, height: 'auto', y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -15 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  className="feedback-form-container"
+                >
+                  <div className="feedback-form-box">
+                    <div className="feedback-form-header">
+                      <div>
+                        <h3>Share Your Parent Review & Feedback</h3>
+                        <p>माता-पिता की समीक्षा — Share your child's learning journey and experience with our school</p>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="feedback-close-x-btn" 
+                        onClick={() => setShowFeedbackForm(false)}
+                        aria-label="Close form"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {feedbackSubmitted && (
+                      <div className="feedback-success-banner">
+                        <CheckCircle2 size={22} color="#166534" style={{ flexShrink: 0 }} />
+                        <div>
+                          <strong>Thank You So Much! 🎉</strong>
+                          <p>Your review has been successfully recorded and published below! We deeply value your trust in M. V. Scholars Pre School.</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <form className="parent-review-form" onSubmit={(e) => handleFeedbackSubmit(e, false)}>
+                      {/* Interactive 5-Star Rating */}
+                      <div className="rating-select-group">
+                        <label className="rating-select-label">Your Overall Experience Rating *</label>
+                        <div className="star-rating-row">
+                          <div className="stars-interactive">
+                            {[1, 2, 3, 4, 5].map((starVal) => {
+                              const activeStar = (hoverRating || feedbackForm.rating) >= starVal;
+                              return (
+                                <button
+                                  type="button"
+                                  key={starVal}
+                                  className={`star-pick-btn ${activeStar ? 'active' : ''}`}
+                                  onMouseEnter={() => setHoverRating(starVal)}
+                                  onMouseLeave={() => setHoverRating(0)}
+                                  onClick={() => setFeedbackForm({ ...feedbackForm, rating: starVal })}
+                                  aria-label={`${starVal} star rating`}
+                                >
+                                  ★
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <span className="rating-text-hint">
+                            {ratingDescriptions[hoverRating || feedbackForm.rating || 5]}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label htmlFor="revParentName">Parent's Full Name *</label>
+                          <input 
+                            id="revParentName"
+                            type="text" 
+                            placeholder="e.g. Meenakshi Sharma" 
+                            value={feedbackForm.parentName}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, parentName: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="revChildInfo">Relationship & Child's Name *</label>
+                          <input 
+                            id="revChildInfo"
+                            type="text" 
+                            placeholder="e.g. Mother of Aarav / Father of Ananya" 
+                            value={feedbackForm.childInfo}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, childInfo: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label htmlFor="revClass">Child's Class / Grade *</label>
+                          <select 
+                            id="revClass"
+                            value={feedbackForm.selectedClass}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, selectedClass: e.target.value })}
+                          >
+                            <option value="Pre-Nursery">Pre-Nursery (Age 2.5 - 3 yrs)</option>
+                            <option value="Nursery">Nursery (Age 3 - 4 yrs)</option>
+                            <option value="LKG">LKG (Lower Kindergarten)</option>
+                            <option value="UKG">UKG (Upper Kindergarten)</option>
+                            <option value="Class 1st">Class 1st</option>
+                            <option value="Class 2nd">Class 2nd</option>
+                            <option value="Class 3rd">Class 3rd</option>
+                            <option value="Class 4th">Class 4th</option>
+                            <option value="Class 5th">Class 5th</option>
+                            <option value="Alumni / Past Student">Alumni / Past Student</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="revPhone">Phone Number (Optional - for school verification)</label>
+                          <input 
+                            id="revPhone"
+                            type="tel" 
+                            placeholder="e.g. 9876543210 (kept private)" 
+                            value={feedbackForm.phone}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, phone: e.target.value })}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="revMessage">Your Honest Feedback & Experience *</label>
+                        <textarea 
+                          id="revMessage"
+                          rows="4" 
+                          placeholder="How has your experience been with M. V. Scholars Pre School? (e.g. caring teachers, child's academic and emotional growth, campus safety, moral sanskars, festive celebrations)..."
+                          value={feedbackForm.review}
+                          onChange={(e) => setFeedbackForm({ ...feedbackForm, review: e.target.value })}
+                          required
+                        />
+                      </div>
+
+                      <div className="feedback-submit-buttons">
+                        <button 
+                          type="button" 
+                          className="feedback-btn-whatsapp"
+                          onClick={(e) => handleFeedbackSubmit(e, true)}
+                        >
+                          <MessageCircle size={18} />
+                          <span>Submit & Send to School WhatsApp</span>
+                        </button>
+                        <button 
+                          type="submit" 
+                          className="feedback-btn-site"
+                        >
+                          <Check size={18} />
+                          <span>Post Review on Website</span>
+                        </button>
+                      </div>
+
+                      <div className="feedback-form-footer-note">
+                        🔒 Your phone number is kept confidential. Your review will appear below to help inspire other parents.
+                      </div>
+                    </form>
                   </div>
-                  <div className="testimonial-author">
-                    <div className="testimonial-avatar">{t.avatar}</div>
-                    <div className="testimonial-info">
-                      <strong>{t.name}</strong>
-                      <small>{t.child}</small>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* TESTIMONIALS GRID */}
+            <div className="testimonials-grid">
+              {reviewList.map((t, idx) => {
+                const starCount = t.rating || 5;
+                const starsString = '★'.repeat(starCount) + '☆'.repeat(Math.max(0, 5 - starCount));
+                return (
+                  <div className="testimonial-card" key={t.name + idx}>
+                    <div>
+                      <div className="testimonial-card-top">
+                        <div className="testimonial-stars">{starsString}</div>
+                        {t.isUserSubmitted && (
+                          <span className="verified-parent-badge">
+                            <span className="badge-pulse-dot"></span> Verified Parent Review
+                          </span>
+                        )}
+                      </div>
+                      <p className="testimonial-quote">"{t.text}"</p>
+                    </div>
+                    <div className="testimonial-author">
+                      <div className="testimonial-avatar">{t.avatar || t.name.charAt(0)}</div>
+                      <div className="testimonial-info">
+                        <strong>{t.name}</strong>
+                        <small>{t.child}</small>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 
