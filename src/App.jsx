@@ -487,7 +487,12 @@ function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...testimonials];
+          const clean = parsed.filter(r => 
+            !r.name.toLowerCase().includes('suresh') && 
+            !r.name.toLowerCase().includes('health check') &&
+            !r.name.toLowerCase().includes('test')
+          );
+          return [...clean, ...testimonials];
         }
       }
     } catch (e) {
@@ -512,6 +517,20 @@ function App() {
 
   // Automatically fetch all live reviews from Google Sheet on page load
   useEffect(() => {
+    // Clean up any test reviews in localStorage
+    try {
+      const saved = localStorage.getItem('mvsps_parent_reviews');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const filtered = parsed.filter(r => 
+          !r.name.toLowerCase().includes('suresh') && 
+          !r.name.toLowerCase().includes('health check') &&
+          !r.name.toLowerCase().includes('test')
+        );
+        localStorage.setItem('mvsps_parent_reviews', JSON.stringify(filtered));
+      }
+    } catch (e) {}
+
     if (!FEEDBACK_SHEET_URL) return;
     let isMounted = true;
     setIsReviewsLoading(true);
@@ -520,13 +539,19 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         if (!isMounted) return;
-        if (data && data.result === 'success' && Array.isArray(data.reviews) && data.reviews.length > 0) {
+        if (data && data.result === 'success' && Array.isArray(data.reviews)) {
+          // Filter out any test reviews
+          const validSheetReviews = data.reviews.filter((sheetRev) => {
+            const n = (sheetRev.name || '').toLowerCase();
+            return !n.includes('suresh') && !n.includes('health check') && !n.includes('test');
+          });
+
           setReviewList((prevList) => {
             const localSaved = JSON.parse(localStorage.getItem('mvsps_parent_reviews') || '[]');
             const combined = [...localSaved];
 
             // Add sheet reviews if not already present in localSaved
-            data.reviews.forEach((sheetRev) => {
+            validSheetReviews.forEach((sheetRev) => {
               const exists = combined.some(
                 (c) => c.name.toLowerCase() === sheetRev.name.toLowerCase() &&
                   c.text.trim().slice(0, 30) === sheetRev.text.trim().slice(0, 30)
@@ -549,7 +574,6 @@ function App() {
         }
       })
       .catch((err) => {
-        // Will seamlessly fallback to default testimonials if Google Sheet has not updated doGet yet
         console.log('Live Google Sheet reviews notice:', err);
       })
       .finally(() => {
