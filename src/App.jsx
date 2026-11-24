@@ -512,21 +512,38 @@ function App() {
   const [hoverRating, setHoverRating] = useState(0);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [isReviewsLoading, setIsReviewsLoading] = useState(false);
+  const reviewsScrollRef = useRef(null);
+
+  const scrollReviews = (direction) => {
+    if (reviewsScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -350 : 350;
+      reviewsScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const isMockOrTest = (name = '', text = '') => {
+    const n = name.toLowerCase();
+    const t = text.toLowerCase();
+    return (
+      n.includes('suresh') ||
+      n.includes('health check') ||
+      n.includes('test') ||
+      n.includes('pooja sharma') ||
+      n.includes('rajesh kumar') ||
+      n.includes('sunita yadav') ||
+      t.includes('health check')
+    );
+  };
 
   // Automatically fetch all live reviews from Google Sheet on page load
   useEffect(() => {
-    // Clean up any test reviews in localStorage
+    // Clean up any test/mock reviews in localStorage
     try {
       const saved = localStorage.getItem('mvsps_parent_reviews');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const filtered = parsed.filter(r => 
-          !r.name.toLowerCase().includes('suresh') && 
-          !r.name.toLowerCase().includes('health check') &&
-          !r.name.toLowerCase().includes('test')
-        );
+        const filtered = parsed.filter(r => !isMockOrTest(r.name, r.text));
         localStorage.setItem('mvsps_parent_reviews', JSON.stringify(filtered));
       }
     } catch (e) {}
@@ -540,15 +557,15 @@ function App() {
       .then((data) => {
         if (!isMounted) return;
         if (data && data.result === 'success' && Array.isArray(data.reviews)) {
-          // Filter out any test reviews
-          const validSheetReviews = data.reviews.filter((sheetRev) => {
-            const n = (sheetRev.name || '').toLowerCase();
-            return !n.includes('suresh') && !n.includes('health check') && !n.includes('test');
-          });
+          // Filter out any mock/test reviews
+          const validSheetReviews = data.reviews.filter(
+            (sheetRev) => !isMockOrTest(sheetRev.name, sheetRev.text)
+          );
 
-          setReviewList((prevList) => {
+          setReviewList(() => {
             const localSaved = JSON.parse(localStorage.getItem('mvsps_parent_reviews') || '[]');
-            const combined = [...localSaved];
+            const cleanLocal = localSaved.filter(r => !isMockOrTest(r.name, r.text));
+            const combined = [...cleanLocal];
 
             // Add sheet reviews if not already present in localSaved
             validSheetReviews.forEach((sheetRev) => {
@@ -558,14 +575,6 @@ function App() {
               );
               if (!exists) {
                 combined.push(sheetRev);
-              }
-            });
-
-            // Append default base testimonials if not already represented
-            testimonials.forEach((baseRev) => {
-              const exists = combined.some((c) => c.name.toLowerCase() === baseRev.name.toLowerCase());
-              if (!exists) {
-                combined.push(baseRev);
               }
             });
 
@@ -1864,11 +1873,35 @@ Thank you!`;
               )}
             </AnimatePresence>
 
-            {/* TESTIMONIALS HEADER & COUNT */}
+            {/* TESTIMONIALS HEADER & SCROLL CONTROLS */}
             <div className="testimonials-header-bar">
               <div className="reviews-count-badge">
-                ⭐ {reviewList.length} Parent Reviews
+                ⭐ {reviewList.length} {reviewList.length === 1 ? 'Parent Review' : 'Parent Reviews'}
               </div>
+
+              {reviewList.length > 1 && (
+                <div className="reviews-scroll-arrows">
+                  <button 
+                    type="button" 
+                    className="review-arrow-btn"
+                    onClick={() => scrollReviews('left')}
+                    aria-label="Scroll reviews left"
+                    title="Previous reviews"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button 
+                    type="button" 
+                    className="review-arrow-btn"
+                    onClick={() => scrollReviews('right')}
+                    aria-label="Scroll reviews right"
+                    title="Next reviews"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
+
               {isReviewsLoading && (
                 <span className="reviews-syncing-indicator">
                   ↻ Checking for new feedback...
@@ -1876,45 +1909,50 @@ Thank you!`;
               )}
             </div>
 
-            {/* TESTIMONIALS GRID */}
-            <div className="testimonials-grid">
-              {(showAllReviews ? reviewList : reviewList.slice(0, 6)).map((t, idx) => {
-                const starCount = t.rating || 5;
-                const starsString = '★'.repeat(starCount) + '☆'.repeat(Math.max(0, 5 - starCount));
-                return (
-                  <div className="testimonial-card" key={t.name + idx}>
-                    <div>
-                      <div className="testimonial-card-top">
-                        <div className="testimonial-stars">{starsString}</div>
-                        {t.isUserSubmitted && (
-                          <span className="verified-parent-badge">
-                            <span className="badge-pulse-dot"></span> Verified Parent Review
-                          </span>
-                        )}
+            {/* HORIZONTALLY SCROLLING REVIEWS CAROUSEL */}
+            {reviewList.length === 0 ? (
+              <div className="reviews-empty-state">
+                <p style={{ color: 'var(--purple)', fontFamily: 'Fredoka', fontSize: '19px', margin: '0 0 6px 0' }}>
+                  Be the first to share your experience! 🌟
+                </p>
+                <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>
+                  Are you an M. V. Scholars parent? Click "Write a Parent Review" above to submit your feedback.
+                </p>
+              </div>
+            ) : (
+              <div className="reviews-scroll-container" ref={reviewsScrollRef}>
+                {reviewList.map((t, idx) => {
+                  const starCount = t.rating || 5;
+                  const starsString = '★'.repeat(starCount) + '☆'.repeat(Math.max(0, 5 - starCount));
+                  return (
+                    <div className="testimonial-card horizontal-card" key={t.name + idx}>
+                      <div>
+                        <div className="testimonial-card-top">
+                          <div className="testimonial-stars">{starsString}</div>
+                          {t.isUserSubmitted && (
+                            <span className="verified-parent-badge">
+                              <span className="badge-pulse-dot"></span> Verified Parent Review
+                            </span>
+                          )}
+                        </div>
+                        <p className="testimonial-quote">"{t.text}"</p>
                       </div>
-                      <p className="testimonial-quote">"{t.text}"</p>
-                    </div>
-                    <div className="testimonial-author">
-                      <div className="testimonial-avatar">{t.avatar || t.name.charAt(0)}</div>
-                      <div className="testimonial-info">
-                        <strong>{t.name}</strong>
-                        <small>{t.child}</small>
+                      <div className="testimonial-author">
+                        <div className="testimonial-avatar">{t.avatar || t.name.charAt(0)}</div>
+                        <div className="testimonial-info">
+                          <strong>{t.name}</strong>
+                          <small>{t.child}</small>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
 
-            {reviewList.length > 6 && (
-              <div className="view-more-reviews-wrapper">
-                <button
-                  type="button"
-                  className="view-more-reviews-btn"
-                  onClick={() => setShowAllReviews(!showAllReviews)}
-                >
-                  {showAllReviews ? '▲ Show Fewer Reviews' : `▼ View All ${reviewList.length} Parent Reviews`}
-                </button>
+            {reviewList.length > 1 && (
+              <div className="reviews-swipe-hint">
+                <span>← Swipe or use arrows to view more reviews →</span>
               </div>
             )}
           </section>
