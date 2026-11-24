@@ -496,7 +496,30 @@ function App() {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [isReviewsLoading, setIsReviewsLoading] = useState(false);
+  const [emailCopiedToast, setEmailCopiedToast] = useState(false);
   const reviewsScrollRef = useRef(null);
+
+  const handleEmailClick = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    // 1. Copy email to clipboard
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(EMAIL).catch(() => {});
+    }
+    setEmailCopiedToast(true);
+    setTimeout(() => setEmailCopiedToast(false), 4500);
+
+    // 2. Open Gmail Web composer directly in a new tab (guaranteed to work in browser)
+    const subject = 'Enquiry regarding M. V. Scholars Pre School';
+    const body = 'Hello M. V. Scholars Pre School team,\n\nI would like to enquire about:\n\nThank you!';
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+
+    // 3. Also trigger mailto protocol for devices with configured email apps (Outlook/Apple Mail/Android)
+    setTimeout(() => {
+      window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}`;
+    }, 400);
+  };
 
   const scrollReviews = (direction) => {
     if (reviewsScrollRef.current) {
@@ -510,6 +533,7 @@ function App() {
     // Clear any old local cache so Google Sheet remains the 100% authoritative source
     try {
       localStorage.removeItem('mvsps_parent_reviews');
+      sessionStorage.removeItem('mvsps_parent_reviews');
     } catch (e) {}
 
     if (!FEEDBACK_SHEET_URL) return;
@@ -524,9 +548,13 @@ function App() {
       .then((data) => {
         if (!isMounted) return;
         if (data && data.result === 'success' && Array.isArray(data.reviews)) {
+          // Filter out any unwanted testing entries if present
+          const cleanedSheetReviews = data.reviews.filter(
+            (r) => r.name && !r.name.toLowerCase().includes('health check') && !r.name.toLowerCase().includes('test')
+          );
           // Directly set reviews from Google Sheet + base testimonials
           // If any row is deleted from the Google Sheet, it is automatically removed here!
-          setReviewList([...data.reviews, ...testimonials]);
+          setReviewList([...cleanedSheetReviews, ...testimonials]);
         }
       })
       .catch((err) => {
@@ -659,7 +687,22 @@ I would like to enquire about admission:
 
 Thank you!`;
 
-    window.open(`mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    // 1. Copy email address to clipboard
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(EMAIL).catch(() => {});
+    }
+    setEmailCopiedToast(true);
+    setTimeout(() => setEmailCopiedToast(false), 4500);
+
+    // 2. Open Gmail Web composer in a new tab
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+
+    // 3. Trigger fallback mailto: for desktop mail apps
+    setTimeout(() => {
+      window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }, 400);
+
     setFormSubmitted(true);
   };
 
@@ -1874,7 +1917,9 @@ Thank you!`;
                             </span>
                           )}
                         </div>
-                        <p className="testimonial-quote">"{t.text}"</p>
+                        <p className="testimonial-quote">
+                          "{t.text ? t.text.replace(/^["'\s]+|["'\s]+$/g, '') : ''}"
+                        </p>
                       </div>
                       <div className="testimonial-author">
                         <div className="testimonial-avatar">{t.avatar || t.name.charAt(0)}</div>
@@ -2080,7 +2125,12 @@ Thank you!`;
                     <small>+91 87509 94677</small>
                   </span>
                 </a>
-                <a href={`mailto:${EMAIL}`}>
+                <a
+                  href={`mailto:${EMAIL}`}
+                  onClick={handleEmailClick}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to email us or open in Gmail"
+                >
                   <Mail />
                   <span>
                     <strong>Email</strong>
@@ -2235,6 +2285,14 @@ Thank you!`;
         <MessageCircle size={20} />
         <span>Chat on WhatsApp</span>
       </a>
+
+      {/* EMAIL TOAST NOTIFICATION */}
+      {emailCopiedToast && (
+        <div className="email-copied-toast">
+          <CheckCircle2 size={18} color="#22c55e" />
+          <span>Opening Email... (Address <strong>{EMAIL}</strong> copied to clipboard!)</span>
+        </div>
+      )}
     </>
   );
 }
