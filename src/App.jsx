@@ -481,21 +481,6 @@ function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // PARENT FEEDBACK & REVIEWS STATE
-  const [reviewList, setReviewList] = useState(() => {
-    try {
-      const saved = localStorage.getItem('mvsps_parent_reviews');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...testimonials];
-        }
-      }
-    } catch (e) {
-      console.error('Error loading reviews from localStorage', e);
-    }
-    return testimonials;
-  });
-
   const [feedbackForm, setFeedbackForm] = useState({
     parentName: '',
     childInfo: '',
@@ -527,29 +512,7 @@ function App() {
       return;
     }
 
-    const newReview = {
-      name: feedbackForm.parentName.trim(),
-      child: `${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})`,
-      avatar: feedbackForm.parentName.trim().charAt(0).toUpperCase() || 'P',
-      rating: feedbackForm.rating || 5,
-      text: feedbackForm.review.trim(),
-      date: 'Just now',
-      isUserSubmitted: true
-    };
-
-    const updated = [newReview, ...reviewList];
-    setReviewList(updated);
-
-    try {
-      const userOnly = updated.filter(r => r.isUserSubmitted);
-      localStorage.setItem('mvsps_parent_reviews', JSON.stringify(userOnly));
-    } catch (err) {
-      console.error('Error saving review to localStorage', err);
-    }
-
-    setFeedbackSubmitted(true);
-
-    // Automatically send review to Google Sheet if Webhook URL is set
+    // Automatically send review to Google Sheet for school administration
     if (FEEDBACK_SHEET_URL) {
       try {
         fetch(FEEDBACK_SHEET_URL, {
@@ -573,9 +536,11 @@ function App() {
       }
     }
 
+    setFeedbackSubmitted(true);
+
     if (sendToWhatsApp) {
       const starIcons = '⭐'.repeat(feedbackForm.rating || 5);
-      const waText = `*🌟 New Parent Review - M. V. Scholars Pre School 🌟*
+      const waText = `*🌟 New Parent Feedback - M. V. Scholars Pre School 🌟*
 👤 *Parent Name:* ${feedbackForm.parentName.trim()}
 🧒 *Child:* ${feedbackForm.childInfo.trim() || 'Parent'} (${feedbackForm.selectedClass})
 ⭐ *Rating:* ${starIcons} (${feedbackForm.rating || 5}/5)
@@ -583,7 +548,7 @@ function App() {
 💬 *Feedback / Review:*
 "${feedbackForm.review.trim()}"
 
-Thank you for nurturing our child with such love and care!`;
+Submitted for M. V. Scholars Pre School Administration.`;
 
       window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
     }
@@ -1657,7 +1622,7 @@ Thank you!`;
                         <CheckCircle2 size={22} color="#166534" style={{ flexShrink: 0 }} />
                         <div>
                           <strong>Thank You So Much! 🎉</strong>
-                          <p>Your review has been successfully recorded and published below! We deeply value your trust in M. V. Scholars Pre School.</p>
+                          <p>Your feedback has been successfully submitted to the school administration. We deeply value your feedback and encouragement!</p>
                         </div>
                       </div>
                     )}
@@ -1762,24 +1727,24 @@ Thank you!`;
 
                       <div className="feedback-submit-buttons">
                         <button 
+                          type="submit" 
+                          className="feedback-btn-site"
+                        >
+                          <Send size={18} />
+                          <span>Submit Feedback</span>
+                        </button>
+                        <button 
                           type="button" 
                           className="feedback-btn-whatsapp"
                           onClick={(e) => handleFeedbackSubmit(e, true)}
                         >
                           <MessageCircle size={18} />
-                          <span>Submit & Send to School WhatsApp</span>
-                        </button>
-                        <button 
-                          type="submit" 
-                          className="feedback-btn-site"
-                        >
-                          <Check size={18} />
-                          <span>Post Review on Website</span>
+                          <span>Submit & Send via WhatsApp</span>
                         </button>
                       </div>
 
                       <div className="feedback-form-footer-note">
-                        🔒 Your phone number is kept confidential. Your review will appear below to help inspire other parents.
+                        🔒 Your feedback and contact details are submitted directly to the school administration for review and record.
                       </div>
                     </form>
                   </div>
@@ -1787,9 +1752,9 @@ Thank you!`;
               )}
             </AnimatePresence>
 
-            {/* TESTIMONIALS GRID */}
+            {/* TESTIMONIALS GRID (ADMIN-APPROVED REVIEWS) */}
             <div className="testimonials-grid">
-              {reviewList.map((t, idx) => {
+              {testimonials.map((t, idx) => {
                 const starCount = t.rating || 5;
                 const starsString = '★'.repeat(starCount) + '☆'.repeat(Math.max(0, 5 - starCount));
                 return (
@@ -1797,11 +1762,6 @@ Thank you!`;
                     <div>
                       <div className="testimonial-card-top">
                         <div className="testimonial-stars">{starsString}</div>
-                        {t.isUserSubmitted && (
-                          <span className="verified-parent-badge">
-                            <span className="badge-pulse-dot"></span> Verified Parent Review
-                          </span>
-                        )}
                       </div>
                       <p className="testimonial-quote">"{t.text}"</p>
                     </div>
