@@ -11,6 +11,8 @@ const PHONE = '918750994677';
 const EMAIL = 'mvscholars7@gmail.com';
 const MAPS_URL = 'https://maps.app.goo.gl/fUpGj39ZQUtdzi2a7?g_st=aw';
 const whatsapp = `https://wa.me/${PHONE}?text=${encodeURIComponent('Hello M. V. Scholars Pre School! I would like to enquire about admissions.')}`;
+// Google Sheets Webhook URL for saving parent reviews automatically
+const FEEDBACK_SHEET_URL = import.meta.env.VITE_FEEDBACK_SHEET_URL || '';
 
 const activities = [
   { icon: BookOpen, title: 'Foundational Learning', text: 'Building early literacy, numeracy, and curiosity through guided discovery and playful activities.' },
@@ -546,6 +548,30 @@ function App() {
     }
 
     setFeedbackSubmitted(true);
+
+    // Automatically send review to Google Sheet if Webhook URL is set
+    if (FEEDBACK_SHEET_URL) {
+      try {
+        fetch(FEEDBACK_SHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+            parentName: feedbackForm.parentName.trim(),
+            childInfo: feedbackForm.childInfo.trim() || 'Parent',
+            selectedClass: feedbackForm.selectedClass,
+            rating: feedbackForm.rating || 5,
+            phone: feedbackForm.phone.trim() || 'Not specified',
+            review: feedbackForm.review.trim()
+          })
+        }).catch(err => console.log('Sheet post error:', err));
+      } catch (err) {
+        console.error('Error posting review to Google Sheets:', err);
+      }
+    }
 
     if (sendToWhatsApp) {
       const starIcons = '⭐'.repeat(feedbackForm.rating || 5);
